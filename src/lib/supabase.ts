@@ -80,3 +80,10 @@ export interface Web {
   created_at: string;
 }
 
+export interface Announcement {
+  id: string;
+  message: string;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+}

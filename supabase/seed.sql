@@ -103,12 +103,27 @@ CREATE TABLE IF NOT EXISTS categories (
 );
 
 -- =============================================
+-- ANNOUNCEMENTS TABLE
+-- =============================================
+CREATE TABLE IF NOT EXISTS announcements (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  message TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT true,
+  display_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_announcements_active ON announcements(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_announcements_order ON announcements(display_order);
+
+-- =============================================
 -- ROW LEVEL SECURITY
 -- =============================================
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE apps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE webs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
 
 -- Public read access for all tables
 DROP POLICY IF EXISTS "Public read access" ON products;
@@ -122,6 +137,9 @@ CREATE POLICY "Public read access" ON webs FOR SELECT USING (is_active = true);
 
 DROP POLICY IF EXISTS "Public read access categories" ON categories;
 CREATE POLICY "Public read access categories" ON categories FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public read access announcements" ON announcements;
+CREATE POLICY "Public read access announcements" ON announcements FOR SELECT USING (is_active = true);
 
 -- =============================================
 -- SEED DATA: PRODUCTS
@@ -452,6 +470,15 @@ INSERT INTO categories (name, slug, icon, display_order) VALUES
 ('Web Services', 'web-services', 'Server', 7)
 ON CONFLICT (slug) DO NOTHING;
 
--- Success message
-SELECT 'Seed completed! Products: ' || (SELECT COUNT(*) FROM products) || ', Apps: ' || (SELECT COUNT(*) FROM apps) || ', Webs: ' || (SELECT COUNT(*) FROM webs) || ', Categories: ' || (SELECT COUNT(*) FROM categories);
+-- =============================================
+-- SEED DATA: ANNOUNCEMENTS
+-- =============================================
+INSERT INTO announcements (message, is_active, display_order) VALUES
+('🎉 Promo Januari! Diskon 20% untuk semua source code hingga akhir bulan', true, 1),
+('💬 Konsultasi gratis via WhatsApp 24/7 - Tanya apapun tentang produk kami', true, 2),
+('🚀 Produk baru: Invoice Generator & QR Menu Restaurant sudah tersedia!', true, 3),
+('⚡ Gratis update minor version selamanya untuk semua produk', true, 4)
+ON CONFLICT DO NOTHING;
 
+-- Success message
+SELECT 'Seed completed! Products: ' || (SELECT COUNT(*) FROM products) || ', Apps: ' || (SELECT COUNT(*) FROM apps) || ', Webs: ' || (SELECT COUNT(*) FROM webs) || ', Announcements: ' || (SELECT COUNT(*) FROM announcements) || ', Categories: ' || (SELECT COUNT(*) FROM categories);
