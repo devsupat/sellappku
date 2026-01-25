@@ -52,7 +52,7 @@ export function Footer() {
                                 <Github className="h-4 w-4" />
                             </a>
                             <a
-                                href="#"
+                                href="https://www.instagram.com/scenecrafter/"
                                 className="p-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors"
                             >
                                 <Instagram className="h-4 w-4" />
