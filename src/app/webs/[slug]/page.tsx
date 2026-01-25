@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
-import { getWebBySlug, getWebs } from '@/lib/data';
+import { getWebBySlug, getWebs, getRelatedWebs } from '@/lib/data';
+import { RelatedItems } from '@/components/related-items';
 
 // ISR: Revalidate every 60 seconds
 export const revalidate = 60;
@@ -62,7 +63,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function WebDetailPage({ params }: PageProps) {
     const { slug } = await params;
-    const web = await getWebBySlug(slug);
+    const [web, relatedWebs] = await Promise.all([
+        getWebBySlug(slug),
+        getRelatedWebs(slug)
+    ]);
 
     if (!web) {
         notFound();
@@ -357,6 +361,15 @@ export default async function WebDetailPage({ params }: PageProps) {
                             Langsung chat dengan developer untuk bantuan
                         </p>
                     </div>
+                </div>
+
+                {/* Related Webs */}
+                <div className="mt-16">
+                    <RelatedItems
+                        title="Layanan Web Lainnya"
+                        items={relatedWebs}
+                        type="webs"
+                    />
                 </div>
             </div>
         </div>

@@ -60,6 +60,22 @@ export async function getProductsByCategory(category: string): Promise<Product[]
     return data || [];
 }
 
+export async function getRelatedProducts(category: string, currentSlug: string): Promise<Product[]> {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .eq('category', category)
+        .neq('slug', currentSlug)
+        .limit(4);
+
+    if (error) {
+        console.error('Error fetching related products:', error);
+        return [];
+    }
+    return data || [];
+}
+
 // Apps
 export async function getApps(): Promise<App[]> {
     const { data, error } = await supabase
@@ -103,6 +119,21 @@ export async function getAppBySlug(slug: string): Promise<App | null> {
         return null;
     }
     return data;
+}
+
+export async function getRelatedApps(currentSlug: string): Promise<App[]> {
+    const { data, error } = await supabase
+        .from('apps')
+        .select('*')
+        .eq('is_active', true)
+        .neq('slug', currentSlug)
+        .limit(4);
+
+    if (error) {
+        console.error('Error fetching related apps:', error);
+        return [];
+    }
+    return data || [];
 }
 
 // Webs (Web Services)
@@ -149,6 +180,21 @@ export async function getWebBySlug(slug: string): Promise<Web | null> {
         return null;
     }
     return data;
+}
+
+export async function getRelatedWebs(currentSlug: string): Promise<Web[]> {
+    const { data, error } = await supabase
+        .from('webs')
+        .select('*')
+        .eq('is_active', true)
+        .neq('slug', currentSlug)
+        .limit(4);
+
+    if (error) {
+        console.error('Error fetching related webs:', error);
+        return [];
+    }
+    return data || [];
 }
 // Announcements
 export async function getActiveAnnouncements(): Promise<Announcement[]> {

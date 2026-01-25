@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
-import { getAppBySlug, getApps } from '@/lib/data';
+import { getAppBySlug, getApps, getRelatedApps } from '@/lib/data';
+import { RelatedItems } from '@/components/related-items';
 
 // ISR: Revalidate every 60 seconds
 export const revalidate = 60;
@@ -81,7 +82,10 @@ function getDownloadInfo(type: string) {
 
 export default async function AppDetailPage({ params }: PageProps) {
     const { slug } = await params;
-    const app = await getAppBySlug(slug);
+    const [app, relatedApps] = await Promise.all([
+        getAppBySlug(slug),
+        getRelatedApps(slug)
+    ]);
 
     if (!app) {
         notFound();
@@ -312,6 +316,15 @@ export default async function AppDetailPage({ params }: PageProps) {
                         <MessageCircle className="mr-2 h-5 w-5" />
                         Chat via WhatsApp
                     </a>
+                </div>
+
+                {/* Related Apps */}
+                <div className="mt-16">
+                    <RelatedItems
+                        title="Aplikasi Lainnya"
+                        items={relatedApps}
+                        type="apps"
+                    />
                 </div>
             </div>
         </div>

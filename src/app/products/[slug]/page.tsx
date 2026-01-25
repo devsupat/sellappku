@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
-import { getProductBySlug, getProducts } from '@/lib/data';
+import { getProductBySlug, getProducts, getRelatedProducts } from '@/lib/data';
+import { RelatedItems } from '@/components/related-items';
 
 // ISR: Revalidate every 60 seconds
 export const revalidate = 60;
@@ -68,13 +69,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProductDetailPage({ params }: PageProps) {
     const { slug } = await params;
-    const product = await getProductBySlug(slug);
+    const currentProduct = await getProductBySlug(slug);
 
-    if (!product) {
+    if (!currentProduct) {
         notFound();
     }
 
-    const whatsappLink = generateWhatsAppLink(product.title);
+    const whatsappLink = generateWhatsAppLink(currentProduct.title);
+    const relatedItems = await getRelatedProducts(currentProduct.category, currentProduct.slug);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -89,8 +91,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         Kembali ke Katalog
                     </Link>
                     <div className="flex items-center space-x-2">
-                        <span className="badge bg-white/20 text-white">{product.category}</span>
-                        {product.is_featured && (
+                        <span className="badge bg-white/20 text-white">{currentProduct.category}</span>
+                        {currentProduct.is_featured && (
                             <span className="badge badge-amber">Featured</span>
                         )}
                     </div>
@@ -103,10 +105,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     <div>
                         {/* Thumbnail */}
                         <div className="relative aspect-video bg-gradient-to-br from-violet-100 to-indigo-100 rounded-3xl overflow-hidden flex items-center justify-center mb-6 shadow-lg">
-                            {product.thumbnail_url ? (
+                            {currentProduct.thumbnail_url ? (
                                 <Image
-                                    src={product.thumbnail_url}
-                                    alt={product.title}
+                                    src={currentProduct.thumbnail_url}
+                                    alt={currentProduct.title}
                                     fill
                                     priority
                                     className="object-cover"
@@ -118,9 +120,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         </div>
 
                         {/* Video Demo Button */}
-                        {product.video_url && (
+                        {currentProduct.video_url && (
                             <a
-                                href={product.video_url ?? undefined}
+                                href={currentProduct.video_url ?? undefined}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-full flex items-center justify-center space-x-3 p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-transparent dark:border-gray-800 hover:shadow-md transition-shadow mb-6"
@@ -135,9 +137,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         )}
 
                         {/* Live Demo Button */}
-                        {product.demo_url && (
+                        {currentProduct.demo_url && (
                             <a
-                                href={product.demo_url ?? undefined}
+                                href={currentProduct.demo_url ?? undefined}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-full flex items-center justify-center space-x-2 p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-transparent dark:border-gray-800 hover:shadow-md transition-shadow"
@@ -153,16 +155,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     {/* Right - Info */}
                     <div>
                         <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                            {product.title}
+                            {currentProduct.title}
                         </h1>
                         <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-                            {product.short_description}
+                            {currentProduct.short_description}
                         </p>
 
                         {/* Price */}
                         <div className="flex items-baseline space-x-3 mb-6">
                             <span className="text-4xl font-bold text-violet-600 ">
-                                {product.price}
+                                {currentProduct.price}
                             </span>
                             <span className="text-gray-500 dark:text-gray-400">
                                 One-time payment
@@ -175,7 +177,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                                 Tech Stack
                             </h3>
                             <div className="flex flex-wrap gap-2">
-                                {product.tech_stack?.map((tech, i) => (
+                                {currentProduct.tech_stack?.map((tech, i) => (
                                     <span
                                         key={i}
                                         className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -224,13 +226,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </div>
 
                 {/* Features */}
-                {product.features && product.features.length > 0 && (
+                {currentProduct.features && currentProduct.features.length > 0 && (
                     <div className="mt-16">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
                             Fitur Lengkap
                         </h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {product.features.map((feature, i) => (
+                            {currentProduct.features.map((feature, i) => (
                                 <div
                                     key={i}
                                     className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-transparent dark:border-gray-800"
@@ -251,13 +253,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 )}
 
                 {/* Description */}
-                {product.description && (
+                {currentProduct.description && (
                     <div className="mt-16 bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-sm border border-transparent dark:border-gray-800">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                             Deskripsi Lengkap
                         </h2>
                         <div className="prose prose-gray max-w-none">
-                            {product.description.split('\n').map((line, i) => {
+                            {currentProduct.description.split('\n').map((line, i) => {
                                 if (line.startsWith('# ')) {
                                     return <h2 key={i} className="text-2xl font-bold mt-6 mb-4">{line.replace('# ', '')}</h2>;
                                 }
@@ -318,6 +320,15 @@ export default async function ProductDetailPage({ params }: PageProps) {
                             </div>
                         ))}
                     </div>
+                </div>
+
+                {/* Related Products */}
+                <div className="mt-16">
+                    <RelatedItems
+                        title="Produk Terkait"
+                        items={relatedItems}
+                        type="products"
+                    />
                 </div>
             </div>
         </div>
