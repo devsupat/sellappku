@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { AnnouncementBar } from '@/components/announcement-bar';
+import Script from 'next/script';
 
 import { getActiveAnnouncements } from '@/lib/data';
 
@@ -82,7 +83,21 @@ export default async function RootLayout({
 
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased text-gray-900 dark:text-gray-100`}>
+        {/* Google Analytics 4 */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-WDNPGSK8X1"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-WDNPGSK8X1');
+          `}
+        </Script>
+
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -91,9 +106,11 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950 transition-colors duration-300">
-            <AnnouncementBar messages={messages} />
-            <Navigation />
-            <main className="flex-1 pt-[100px]">
+            <header role="banner">
+              <AnnouncementBar messages={messages} />
+              <Navigation />
+            </header>
+            <main id="main-content" className="flex-1 pt-[100px]" role="main" aria-label="Main Content">
               {children}
             </main>
             <Footer />

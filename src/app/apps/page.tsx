@@ -13,6 +13,7 @@ import {
     Grid3X3,
     Loader2
 } from 'lucide-react';
+import Image from 'next/image';
 import { App } from '@/lib/supabase';
 import { getApps } from '@/lib/data';
 
@@ -230,10 +231,12 @@ export default function AppsPage() {
                                         >
                                             <div className="relative aspect-video bg-gradient-to-br from-indigo-100 to-violet-100 overflow-hidden">
                                                 {app.thumbnail_url ? (
-                                                    <img
+                                                    <Image
                                                         src={app.thumbnail_url}
                                                         alt={app.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        fill
+                                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                     />
                                                 ) : (
                                                     <div className="absolute inset-0 flex items-center justify-center">

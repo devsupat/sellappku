@@ -12,6 +12,7 @@ import {
   Users,
   Zap
 } from 'lucide-react';
+import Image from 'next/image';
 import { generateWhatsAppLinkGeneral } from '@/lib/whatsapp';
 import { getFeaturedProducts, getFeaturedApps } from '@/lib/data';
 import { Product, App } from '@/lib/supabase';
@@ -165,10 +166,12 @@ export default async function HomePage() {
               >
                 <div className="relative aspect-video bg-gradient-to-br from-indigo-50 to-violet-50 overflow-hidden">
                   {product.thumbnail_url ? (
-                    <img
+                    <Image
                       src={product.thumbnail_url}
                       alt={product.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -228,12 +231,14 @@ export default async function HomePage() {
                 className="group flex gap-4 bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 hover:shadow-lg hover:border-indigo-300 dark:hover:border-indigo-700 transition-all"
               >
                 {/* Thumbnail */}
-                <div className="w-16 h-16 flex-shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 rounded-xl overflow-hidden flex items-center justify-center">
+                <div className="w-16 h-16 flex-shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 rounded-xl overflow-hidden flex items-center justify-center relative">
                   {app.thumbnail_url ? (
-                    <img
+                    <Image
                       src={app.thumbnail_url}
                       alt={app.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="64px"
                     />
                   ) : (
                     <Smartphone className="h-8 w-8 text-indigo-300" />

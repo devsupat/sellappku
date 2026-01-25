@@ -12,6 +12,7 @@ import {
     X,
     Loader2
 } from 'lucide-react';
+import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
 import { Product } from '@/lib/supabase';
 import { getProducts } from '@/lib/data';
@@ -186,10 +187,12 @@ export default function ProductsPage() {
                                     >
                                         <div className="relative aspect-video bg-gradient-to-br from-violet-100 to-indigo-100 overflow-hidden">
                                             {product.thumbnail_url ? (
-                                                <img
+                                                <Image
                                                     src={product.thumbnail_url}
                                                     alt={product.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    fill
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                 />
                                             ) : (
                                                 <div className="absolute inset-0 flex items-center justify-center">

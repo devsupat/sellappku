@@ -13,6 +13,7 @@ import {
     Zap,
     Clock
 } from 'lucide-react';
+import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
 import { getWebBySlug, getWebs } from '@/lib/data';
 
@@ -122,8 +123,19 @@ export default async function WebDetailPage({ params }: PageProps) {
                     {/* Left - Media */}
                     <div>
                         {/* Thumbnail */}
-                        <div className="aspect-video bg-gradient-to-br from-emerald-100 to-teal-100 rounded-3xl flex items-center justify-center mb-6 shadow-lg">
-                            <Globe className="h-24 w-24 text-emerald-300 " />
+                        <div className="relative aspect-video bg-gradient-to-br from-emerald-100 to-teal-100 rounded-3xl overflow-hidden flex items-center justify-center mb-6 shadow-lg">
+                            {web.thumbnail_url ? (
+                                <Image
+                                    src={web.thumbnail_url}
+                                    alt={web.title}
+                                    fill
+                                    priority
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                />
+                            ) : (
+                                <Globe className="h-24 w-24 text-emerald-300 " />
+                            )}
                         </div>
 
                         {/* Demo Button */}

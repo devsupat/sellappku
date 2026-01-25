@@ -13,6 +13,7 @@ import {
     Play,
     MessageCircle
 } from 'lucide-react';
+import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
 import { getAppBySlug, getApps } from '@/lib/data';
 
@@ -135,8 +136,19 @@ export default async function AppDetailPage({ params }: PageProps) {
                     {/* Left - Media */}
                     <div>
                         {/* Thumbnail */}
-                        <div className="aspect-video bg-gradient-to-br from-indigo-100 to-violet-100 rounded-3xl flex items-center justify-center mb-6 shadow-lg">
-                            <Smartphone className="h-24 w-24 text-indigo-300 " />
+                        <div className="relative aspect-video bg-gradient-to-br from-indigo-100 to-violet-100 rounded-3xl overflow-hidden flex items-center justify-center mb-6 shadow-lg">
+                            {app.thumbnail_url ? (
+                                <Image
+                                    src={app.thumbnail_url}
+                                    alt={app.title}
+                                    fill
+                                    priority
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                />
+                            ) : (
+                                <Smartphone className="h-24 w-24 text-indigo-300 " />
+                            )}
                         </div>
 
                         {/* App Info Card */}

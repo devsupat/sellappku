@@ -13,6 +13,7 @@ import {
     FileCode,
     BookOpen
 } from 'lucide-react';
+import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
 import { getProductBySlug, getProducts } from '@/lib/data';
 
@@ -101,8 +102,19 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     {/* Left - Media */}
                     <div>
                         {/* Thumbnail */}
-                        <div className="aspect-video bg-gradient-to-br from-violet-100 to-indigo-100 rounded-3xl flex items-center justify-center mb-6 shadow-lg">
-                            <Code2 className="h-24 w-24 text-violet-300 " />
+                        <div className="relative aspect-video bg-gradient-to-br from-violet-100 to-indigo-100 rounded-3xl overflow-hidden flex items-center justify-center mb-6 shadow-lg">
+                            {product.thumbnail_url ? (
+                                <Image
+                                    src={product.thumbnail_url}
+                                    alt={product.title}
+                                    fill
+                                    priority
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                />
+                            ) : (
+                                <Code2 className="h-24 w-24 text-violet-300 " />
+                            )}
                         </div>
 
                         {/* Video Demo Button */}
