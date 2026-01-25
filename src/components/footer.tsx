@@ -40,7 +40,7 @@ export function Footer() {
                                 <MessageCircle className="h-4 w-4" />
                             </a>
                             <a
-                                href="mailto:ahmad@sellappku.com"
+                                href="mailto:bdrtiksupat@gmail.com"
                                 className="p-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors"
                             >
                                 <Mail className="h-4 w-4" />

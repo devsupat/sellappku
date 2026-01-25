@@ -86,7 +86,7 @@ export default function AboutPage() {
                             <Linkedin className="h-6 w-6 text-gray-700 dark:text-gray-300" />
                         </a>
                         <a
-                            href="mailto:ahmad@sellappku.com"
+                            href="mailto:bdrtiksupat@gmail.com"
                             className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
                         >
                             <Mail className="h-6 w-6 text-gray-700 dark:text-gray-300" />
