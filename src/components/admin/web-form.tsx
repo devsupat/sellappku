@@ -51,98 +51,99 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+
+        <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-900/50 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title</label>
                     <input
                         type="text"
                         required
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Slug</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Slug</label>
                     <input
                         type="text"
                         required
                         value={formData.slug}
                         onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Price Source Code</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Price Source Code</label>
                     <input
                         type="text"
                         required
                         value={formData.price_source_code}
                         onChange={(e) => setFormData({ ...formData, price_source_code: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                         placeholder="e.g. Rp 750.000"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Price Lifetime License</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Price Lifetime License</label>
                     <input
                         type="text"
                         required
                         value={formData.price_subscription}
                         onChange={(e) => setFormData({ ...formData, price_subscription: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                         placeholder="e.g. Rp 149.000"
                     />
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Short Description</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Short Description</label>
                 <textarea
                     required
                     value={formData.short_description}
                     onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Thumbnail URL</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Thumbnail URL</label>
                 <input
                     type="url"
                     required
                     value={formData.thumbnail_url}
                     onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Demo URL</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Demo URL</label>
                 <input
                     type="url"
                     value={formData.demo_url}
                     onChange={(e) => setFormData({ ...formData, demo_url: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Tech Stack</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tech Stack</label>
                 <div className="flex gap-2 mb-4">
                     <input
                         type="text"
                         value={newTech}
                         onChange={(e) => setNewTech(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())}
-                        className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                     />
-                    <button type="button" onClick={addTech} className="px-4 py-2 bg-gray-100 rounded-lg font-bold">Add</button>
+                    <button type="button" onClick={addTech} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-lg font-bold">Add</button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {formData.tech_stack.map((t: string) => (
-                        <span key={t} className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm">
+                        <span key={t} className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
                             {t}
                         </span>
                     ))}
@@ -150,21 +151,23 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
             </div>
 
             <div className="flex gap-6">
-                <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer">
                     <input
                         type="checkbox"
                         checked={formData.is_featured}
                         onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <span className="text-sm font-medium">Featured</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Featured</span>
                 </label>
-                <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer">
                     <input
                         type="checkbox"
                         checked={formData.is_active}
                         onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <span className="text-sm font-medium">Active</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
                 </label>
             </div>
 

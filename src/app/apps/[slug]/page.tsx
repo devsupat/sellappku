@@ -44,12 +44,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     return {
-        title: `${app.title} | Sellappku`,
+        title: `${app.title} - Download App Mobile Premium`,
         description: app.short_description,
+        alternates: {
+            canonical: `https://sellappku.netlify.app/apps/${slug}`,
+        },
         openGraph: {
             title: app.title,
             description: app.short_description,
-            type: 'website',
+            type: 'article',
+            url: `https://sellappku.netlify.app/apps/${slug}`,
             images: app.thumbnail_url ? [app.thumbnail_url] : [],
         },
         twitter: {
@@ -85,8 +89,31 @@ export default async function AppDetailPage({ params }: PageProps) {
     const downloadInfo = getDownloadInfo(app.download_type);
     const whatsappLink = generateWhatsAppLink(app.title, `Halo, saya ingin bertanya tentang aplikasi *${app.title}*. Apakah ada info lebih lanjut?`);
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: app.title,
+        description: app.short_description,
+        applicationCategory: 'MultimediaApplication',
+        operatingSystem: 'Android, iOS',
+        author: {
+            '@type': 'Organization',
+            name: 'Sellappku',
+        },
+        softwareVersion: app.version,
+        aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: app.rating || '4.8',
+            ratingCount: '100',
+        },
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Header */}
             <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

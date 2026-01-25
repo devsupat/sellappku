@@ -15,19 +15,29 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://sellappku.vercel.app'),
+  metadataBase: new URL('https://sellappku.netlify.app'),
   title: {
-    default: 'Sellappku - Premium Source Code & Apps',
+    default: 'Sellappku - Jual Beli Source Code & Aplikasi Premium',
     template: '%s | Sellappku',
   },
-  description: 'Platform jual beli source code aplikasi, game, dan layanan web siap pakai dengan lisensi lifetime. Langsung dari developer, tanpa perantara.',
-  keywords: ['source code', 'aplikasi', 'game', 'web', 'mobile app', 'indonesia', 'developer'],
-  authors: [{ name: 'Ahmad', url: 'https://sellappku.com' }],
+  description: 'Platform terpercaya untuk beli source code aplikasi, game, dan script website siap pakai. Lisensi lifetime, langsung dari developer handal Indonesia.',
+  keywords: [
+    'jual source code',
+    'beli aplikasi',
+    'source code mobile app',
+    'script website',
+    'jual script game',
+    'developer indonesia',
+    'software house indonesia',
+    'buy source code',
+    'sell app script'
+  ],
+  authors: [{ name: 'Ahmad', url: 'https://sellappku.netlify.app' }],
   creator: 'Ahmad',
   openGraph: {
     type: 'website',
     locale: 'id_ID',
-    url: 'https://sellappku.com',
+    url: 'https://sellappku.netlify.app',
     siteName: 'Sellappku',
     title: 'Sellappku - Premium Source Code & Apps',
     description: 'Platform jual beli source code aplikasi, game, dan layanan web siap pakai dengan lisensi lifetime.',
@@ -36,14 +46,15 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Sellappku',
+        alt: 'Sellappku - Premium Source Code & Apps',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sellappku - Premium Source Code & Apps',
-    description: 'Platform jual beli source code aplikasi, game, dan layanan web siap pakai dengan lisensi lifetime.',
+    title: 'Sellappku - Jual Beli Source Code & Aplikasi Premium',
+    description: 'Platform terpercaya untuk beli source code aplikasi, game, dan script website siap pakai.',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,
@@ -55,6 +66,9 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  verification: {
+    google: 'google-site-verification-id', // User should replace this
   },
 };
 

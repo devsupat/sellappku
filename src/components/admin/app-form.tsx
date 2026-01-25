@@ -56,47 +56,47 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-900/50 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title</label>
                     <input
                         type="text"
                         required
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Slug</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Slug</label>
                     <input
                         type="text"
                         required
                         value={formData.slug}
                         onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     />
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Short Description</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Short Description</label>
                 <textarea
                     required
                     value={formData.short_description}
                     onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20"
                 />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Download Type</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Download Type</label>
                     <select
                         value={formData.download_type}
                         onChange={(e) => setFormData({ ...formData, download_type: e.target.value as any })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     >
                         <option value="playstore">Play Store</option>
                         <option value="drive">Google Drive</option>
@@ -105,13 +105,13 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Download URL</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Download URL</label>
                     <input
                         type="url"
                         required
                         value={formData.download_url}
                         onChange={(e) => setFormData({ ...formData, download_url: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     />
                 </div>
             </div>
@@ -122,30 +122,30 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
                         type="checkbox"
                         checked={formData.has_tester}
                         onChange={(e) => setFormData({ ...formData, has_tester: e.target.checked })}
-                        className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <span className="text-sm font-medium text-gray-700">Need Tasters</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Need Tasters</span>
                 </label>
             </div>
 
             {formData.has_tester && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30">
                     <div>
-                        <label className="block text-sm font-semibold text-amber-900 mb-2">Tester Group URL</label>
+                        <label className="block text-sm font-semibold text-amber-900 dark:text-amber-400 mb-2">Tester Group URL</label>
                         <input
                             type="url"
                             value={formData.tester_group_url}
                             onChange={(e) => setFormData({ ...formData, tester_group_url: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-amber-200 focus:ring-2 focus:ring-amber-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-amber-200 dark:border-amber-900/50 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-amber-900 mb-2">Tester Invite URL</label>
+                        <label className="block text-sm font-semibold text-amber-900 dark:text-amber-400 mb-2">Tester Invite URL</label>
                         <input
                             type="url"
                             value={formData.tester_invite_url}
                             onChange={(e) => setFormData({ ...formData, tester_invite_url: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-amber-200 focus:ring-2 focus:ring-amber-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-amber-200 dark:border-amber-900/50 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none"
                         />
                     </div>
                 </div>

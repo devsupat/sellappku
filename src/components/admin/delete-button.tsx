@@ -28,7 +28,7 @@ export function DeleteButton({ id, onDelete, label }: DeleteButtonProps) {
         <button
             onClick={handleDelete}
             disabled={loading}
-            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
             {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

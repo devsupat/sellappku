@@ -44,12 +44,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     return {
-        title: `${product.title} | Sellappku`,
+        title: `${product.title} - Jual Source Code ${product.category}`,
         description: product.short_description,
+        alternates: {
+            canonical: `https://sellappku.netlify.app/products/${slug}`,
+        },
         openGraph: {
             title: product.title,
             description: product.short_description,
-            type: 'website',
+            type: 'article',
+            url: `https://sellappku.netlify.app/products/${slug}`,
             images: product.thumbnail_url ? [product.thumbnail_url] : [],
         },
         twitter: {

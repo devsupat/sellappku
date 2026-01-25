@@ -64,7 +64,7 @@ export default async function AdminDashboard() {
                     <Link
                         key={i}
                         href={stat.href}
-                        className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow"
+                        className="bg-white dark:bg-gray-900/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 hover:shadow-lg dark:hover:shadow-indigo-900/10 transition-shadow"
                     >
                         <div className="flex items-start justify-between">
                             <div className={`p-3 rounded-xl ${stat.color} dark:bg-gray-800 dark:text-indigo-400`}>
@@ -82,12 +82,12 @@ export default async function AdminDashboard() {
                 ))}
             </div>
 
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800">
+            <div className="bg-white dark:bg-gray-900/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-800">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Link
                         href="/admin/products/new"
-                        className="flex items-center justify-center gap-2 p-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100"
+                        className="flex items-center justify-center gap-2 p-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg dark:shadow-indigo-900/20"
                     >
                         <Plus className="h-5 w-5" /> New Product
                     </Link>

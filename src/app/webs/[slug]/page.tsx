@@ -44,12 +44,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     return {
-        title: `${web.title} | Web Services | Sellappku`,
+        title: `${web.title} - Layanan Web & SaaS Premium`,
         description: web.short_description,
+        alternates: {
+            canonical: `https://sellappku.netlify.app/webs/${slug}`,
+        },
         openGraph: {
             title: web.title,
             description: web.short_description,
-            type: 'website',
+            type: 'article',
+            url: `https://sellappku.netlify.app/webs/${slug}`,
             images: web.thumbnail_url ? [web.thumbnail_url] : [],
         },
     };
@@ -73,8 +77,30 @@ export default async function WebDetailPage({ params }: PageProps) {
         `Halo, saya ingin *PAKAI LANGSUNG* layanan *${web.title}* dengan harga ${web.price_subscription}/device (lifetime). Mohon info selengkapnya.`
     );
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: web.title,
+        description: web.short_description,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        author: {
+            '@type': 'Organization',
+            name: 'Sellappku',
+        },
+        offers: {
+            '@type': 'Offer',
+            price: web.price_subscription?.replace(/[^0-9]/g, ''),
+            priceCurrency: 'IDR',
+        },
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Header */}
             <div className="bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

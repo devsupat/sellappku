@@ -89,14 +89,14 @@ export function AnnouncementsClient({ initialData }: { initialData: any[] }) {
     return (
         <div className="space-y-6">
             {/* Add Form */}
-            <form onSubmit={handleAdd} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex gap-4">
+            <form onSubmit={handleAdd} className="bg-white dark:bg-gray-900/50 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex gap-4">
                 <input
                     type="text"
                     required
                     placeholder="Tulis pesan pengumuman baru..."
                     value={newMsg}
                     onChange={(e) => setNewMsg(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
                 />
                 <button
                     disabled={loading}
@@ -108,10 +108,10 @@ export function AnnouncementsClient({ initialData }: { initialData: any[] }) {
             </form>
 
             {/* List */}
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                <div className="divide-y divide-gray-100">
+            <div className="bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
+                <div className="divide-y divide-gray-100 dark:divide-gray-800">
                     {announcements.map((item, index) => (
-                        <div key={item.id} className="p-6 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                        <div key={item.id} className="p-6 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <div className="flex flex-col gap-1">
                                 <button
                                     onClick={() => handleMove(index, 'up')}
@@ -136,18 +136,18 @@ export function AnnouncementsClient({ initialData }: { initialData: any[] }) {
                                             type="text"
                                             value={editMsg}
                                             onChange={(e) => setEditMsg(e.target.value)}
-                                            className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            className="flex-1 px-3 py-2 border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                                             autoFocus
                                         />
-                                        <button onClick={() => handleSaveEdit(item.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg">
+                                        <button onClick={() => handleSaveEdit(item.id)} className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg">
                                             <Save className="h-5 w-5" />
                                         </button>
-                                        <button onClick={() => setEditingId(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg">
+                                        <button onClick={() => setEditingId(null)} className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
                                             <X className="h-5 w-5" />
                                         </button>
                                     </div>
                                 ) : (
-                                    <p className={`text-gray-900 font-medium ${!item.is_active && 'text-gray-400 line-through'}`}>
+                                    <p className={`text-gray-900 dark:text-white font-medium ${!item.is_active && 'text-gray-400 dark:text-gray-500 line-through'}`}>
                                         {item.message}
                                     </p>
                                 )}
@@ -159,22 +159,22 @@ export function AnnouncementsClient({ initialData }: { initialData: any[] }) {
                                         setEditingId(item.id);
                                         setEditMsg(item.message);
                                     }}
-                                    className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                    className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
                                 >
                                     <Edit2 className="h-5 w-5" />
                                 </button>
                                 <button
                                     onClick={() => handleToggle(item.id, item.is_active)}
                                     className={`p-2 rounded-lg transition-colors ${item.is_active
-                                            ? 'text-green-600 hover:bg-green-50'
-                                            : 'text-gray-400 hover:bg-gray-100'
+                                        ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                        : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     {item.is_active ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                                 </button>
                                 <button
                                     onClick={() => handleDelete(item.id)}
-                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                 >
                                     <Trash2 className="h-5 w-5" />
                                 </button>
