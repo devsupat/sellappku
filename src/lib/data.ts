@@ -1,20 +1,5 @@
 import { supabase, Product, App, Web, Announcement } from './supabase';
 
-// Announcements
-export async function getActiveAnnouncements(): Promise<Announcement[]> {
-    const { data, error } = await supabase
-        .from('announcements')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-
-    if (error) {
-        console.error('Error fetching announcements:', error);
-        return [];
-    }
-    return data || [];
-}
-
 // Products
 export async function getProducts(): Promise<Product[]> {
     const { data, error } = await supabase
@@ -165,4 +150,17 @@ export async function getWebBySlug(slug: string): Promise<Web | null> {
     }
     return data;
 }
+// Announcements
+export async function getActiveAnnouncements(): Promise<Announcement[]> {
+    const { data, error } = await supabase
+        .from('announcements')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
 
+    if (error) {
+        console.error('Error fetching announcements:', error);
+        return [];
+    }
+    return data || [];
+}

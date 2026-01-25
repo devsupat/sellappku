@@ -1,34 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminPassword, createAdminSession } from '@/lib/auth';
+import { login } from '@/lib/auth';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-    try {
-        const { password } = await request.json();
+export async function POST(request: Request) {
+    const { password } = await request.json();
 
-        if (!password) {
-            return NextResponse.json(
-                { error: 'Password is required' },
-                { status: 400 }
-            );
-        }
+    const success = await login(password);
 
-        const isValid = await verifyAdminPassword(password);
-
-        if (!isValid) {
-            return NextResponse.json(
-                { error: 'Invalid password' },
-                { status: 401 }
-            );
-        }
-
-        await createAdminSession();
-
+    if (success) {
         return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Login error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
     }
+
+    return NextResponse.json(
+        { success: false, message: 'Password salah' },
+        { status: 401 }
+    );
 }

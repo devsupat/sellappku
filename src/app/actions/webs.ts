@@ -1,39 +1,34 @@
 'use server';
 
-import { supabase, Web } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 
-export async function getWebs(): Promise<Web[]> {
-    const { data, error } = await supabase
-        .from('webs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
-}
-
-export async function createWeb(formData: Partial<Web>) {
+export async function createWeb(formData: any) {
     const { error } = await supabase
         .from('webs')
         .insert([formData]);
 
-    if (error) throw error;
-    revalidatePath('/admin/webs');
+    if (error) {
+        console.error('Error creating web service:', error);
+        throw error;
+    }
     revalidatePath('/webs');
+    revalidatePath('/admin/webs');
     revalidatePath('/');
 }
 
-export async function updateWeb(id: string, formData: Partial<Web>) {
+export async function updateWeb(id: string, formData: any) {
     const { error } = await supabase
         .from('webs')
         .update(formData)
         .eq('id', id);
 
-    if (error) throw error;
-    revalidatePath('/admin/webs');
+    if (error) {
+        console.error('Error updating web service:', error);
+        throw error;
+    }
     revalidatePath(`/webs/${formData.slug}`);
-    revalidatePath('/webs');
+    revalidatePath('/admin/webs');
     revalidatePath('/');
 }
 
@@ -43,8 +38,11 @@ export async function deleteWeb(id: string) {
         .delete()
         .eq('id', id);
 
-    if (error) throw error;
-    revalidatePath('/admin/webs');
+    if (error) {
+        console.error('Error deleting web service:', error);
+        throw error;
+    }
     revalidatePath('/webs');
+    revalidatePath('/admin/webs');
     revalidatePath('/');
 }

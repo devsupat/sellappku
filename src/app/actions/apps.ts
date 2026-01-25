@@ -1,39 +1,34 @@
 'use server';
 
-import { supabase, App } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 
-export async function getApps(): Promise<App[]> {
-    const { data, error } = await supabase
-        .from('apps')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
-}
-
-export async function createApp(formData: Partial<App>) {
+export async function createApp(formData: any) {
     const { error } = await supabase
         .from('apps')
         .insert([formData]);
 
-    if (error) throw error;
-    revalidatePath('/admin/apps');
+    if (error) {
+        console.error('Error creating app:', error);
+        throw error;
+    }
     revalidatePath('/apps');
+    revalidatePath('/admin/apps');
     revalidatePath('/');
 }
 
-export async function updateApp(id: string, formData: Partial<App>) {
+export async function updateApp(id: string, formData: any) {
     const { error } = await supabase
         .from('apps')
         .update(formData)
         .eq('id', id);
 
-    if (error) throw error;
-    revalidatePath('/admin/apps');
+    if (error) {
+        console.error('Error updating app:', error);
+        throw error;
+    }
     revalidatePath(`/apps/${formData.slug}`);
-    revalidatePath('/apps');
+    revalidatePath('/admin/apps');
     revalidatePath('/');
 }
 
@@ -43,8 +38,11 @@ export async function deleteApp(id: string) {
         .delete()
         .eq('id', id);
 
-    if (error) throw error;
-    revalidatePath('/admin/apps');
+    if (error) {
+        console.error('Error deleting app:', error);
+        throw error;
+    }
     revalidatePath('/apps');
+    revalidatePath('/admin/apps');
     revalidatePath('/');
 }

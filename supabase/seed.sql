@@ -108,13 +108,13 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS announcements (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   message TEXT NOT NULL,
+  type TEXT DEFAULT 'info',
   is_active BOOLEAN DEFAULT true,
   display_order INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_announcements_active ON announcements(is_active) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_announcements_order ON announcements(display_order);
 
 -- =============================================
 -- ROW LEVEL SECURITY
@@ -127,24 +127,41 @@ ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
 
 -- Public read access for all tables
 DROP POLICY IF EXISTS "Public read access" ON products;
-CREATE POLICY "Public read access" ON products FOR SELECT USING (is_active = true);
+CREATE POLICY "Public read access" ON products FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public read access" ON apps;
-CREATE POLICY "Public read access" ON apps FOR SELECT USING (is_active = true);
+CREATE POLICY "Public read access" ON apps FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public read access" ON webs;
-CREATE POLICY "Public read access" ON webs FOR SELECT USING (is_active = true);
+CREATE POLICY "Public read access" ON webs FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public read access categories" ON categories;
 CREATE POLICY "Public read access categories" ON categories FOR SELECT USING (true);
 
-DROP POLICY IF EXISTS "Public read access announcements" ON announcements;
-CREATE POLICY "Public read access announcements" ON announcements FOR SELECT USING (is_active = true);
+DROP POLICY IF EXISTS "Public read access" ON announcements;
+CREATE POLICY "Public read access" ON announcements FOR SELECT USING (true);
+
+-- Admin access (for simplicity with anon key on server actions)
+-- In production, you should use SERVICE_ROLE_KEY instead!
+DROP POLICY IF EXISTS "Admin full access" ON products;
+CREATE POLICY "Admin full access" ON products FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin full access" ON apps;
+CREATE POLICY "Admin full access" ON apps FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin full access" ON webs;
+CREATE POLICY "Admin full access" ON webs FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin full access" ON announcements;
+CREATE POLICY "Admin full access" ON announcements FOR ALL USING (true);
 
 -- =============================================
 -- SEED DATA: PRODUCTS
 -- =============================================
-INSERT INTO products (slug, title, short_description, description, price, category, tech_stack, features, demo_url, is_featured) VALUES
+-- =============================================
+-- SEED DATA: PRODUCTS
+-- =============================================
+INSERT INTO products (slug, title, short_description, description, price, category, tech_stack, features, thumbnail_url, demo_url, is_featured) VALUES
 (
   'sistem-absensi-qr',
   'Sistem Absensi QR Code',
@@ -154,6 +171,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'educational-tools',
   ARRAY['Next.js', 'Supabase', 'Tailwind', 'QR Scanner', 'Telegram Bot'],
   '[{"title": "QR Code Generator", "description": "Generate QR unik untuk setiap siswa/karyawan"}, {"title": "Real-time Scanner", "description": "Scan absensi langsung dari browser"}, {"title": "Dashboard Admin", "description": "Monitor kehadiran dengan visualisasi data"}, {"title": "Laporan Excel", "description": "Export laporan ke format Excel"}, {"title": "Multi-class Support", "description": "Kelola banyak kelas/departemen"}, {"title": "Telegram Integration", "description": "Kirim notifikasi ke orang tua/atasan"}]'::jsonb,
+  'https://images.unsplash.com/photo-1510218830377-dc2b800bf571?q=80&w=1000&auto=format&fit=crop',
   'https://demo-absensi.vercel.app',
   true
 ),
@@ -166,6 +184,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'e-commerce',
   ARRAY['React', 'Node.js', 'MongoDB', 'Express', 'Vite'],
   '[{"title": "Quick Checkout", "description": "Transaksi cepat dengan shortcut keyboard"}, {"title": "Inventory Management", "description": "Kelola stok dengan notifikasi low-stock"}, {"title": "Multi-outlet", "description": "Satu akun untuk banyak toko"}, {"title": "Sales Report", "description": "Laporan detail dengan grafik"}, {"title": "Thermal Printer", "description": "Cetak struk langsung ke printer"}, {"title": "Offline Mode", "description": "Transaksi tanpa internet"}]'::jsonb,
+  'https://images.unsplash.com/photo-1556742049-ed5323a3a46a?q=80&w=1000&auto=format&fit=crop',
   'https://demo-pos.vercel.app',
   true
 ),
@@ -178,6 +197,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'web-apps',
   ARRAY['Next.js', 'Prisma', 'PostgreSQL', 'TipTap'],
   '[{"title": "Drag & Drop", "description": "Editor visual tanpa coding"}, {"title": "50+ Templates", "description": "Template siap pakai profesional"}, {"title": "Custom Domain", "description": "Gunakan domain sendiri"}, {"title": "Analytics", "description": "Tracking pengunjung built-in"}, {"title": "Form Builder", "description": "Formulir lead capture"}, {"title": "SEO Ready", "description": "Optimasi mesin pencari"}]'::jsonb,
+  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1000&auto=format&fit=crop',
   'https://demo-builder.vercel.app',
   true
 ),
@@ -190,6 +210,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'educational-tools',
   ARRAY['Laravel', 'MySQL', 'Bootstrap', 'jQuery', 'FPDF'],
   '[{"title": "Data Master", "description": "Kelola semua data sekolah"}, {"title": "Akademik", "description": "Jadwal, nilai, rapor digital"}, {"title": "Keuangan", "description": "SPP dan pembayaran"}, {"title": "Absensi", "description": "Rekap kehadiran"}, {"title": "Perpustakaan", "description": "Katalog & peminjaman"}, {"title": "Laporan", "description": "Report generator"}]'::jsonb,
+  'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1000&auto=format&fit=crop',
   'https://demo-sims.vercel.app',
   false
 ),
@@ -202,6 +223,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'admin-dashboards',
   ARRAY['React', 'Tailwind CSS', 'Chart.js', 'React Query'],
   '[{"title": "50+ Components", "description": "Komponen UI lengkap"}, {"title": "Dark Mode", "description": "Mode gelap/terang"}, {"title": "Responsive", "description": "Semua ukuran layar"}, {"title": "Customizable", "description": "Mudah dikustomisasi"}, {"title": "Documented", "description": "Dokumentasi lengkap"}, {"title": "Updates", "description": "Update berkala"}]'::jsonb,
+  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1000&auto=format&fit=crop',
   NULL,
   false
 ),
@@ -214,6 +236,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'web-apps',
   ARRAY['Next.js', 'Prisma', 'Stripe', 'NextAuth', 'PostgreSQL'],
   '[{"title": "Multi-Tenant", "description": "Arsitektur multi-tenant"}, {"title": "Authentication", "description": "NextAuth + social login"}, {"title": "Billing", "description": "Payment gateway ready"}, {"title": "Team", "description": "Manajemen tim & role"}, {"title": "Rate Limit", "description": "API protection"}, {"title": "Email", "description": "Template email"}]'::jsonb,
+  'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1000&auto=format&fit=crop',
   'https://demo-saas.vercel.app',
   true
 ),
@@ -226,6 +249,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'e-commerce',
   ARRAY['Next.js', 'Supabase', 'Midtrans', 'Tailwind CSS'],
   '[{"title": "Product Catalog", "description": "Katalog produk lengkap"}, {"title": "Shopping Cart", "description": "Keranjang belanja"}, {"title": "Checkout", "description": "Proses checkout mudah"}, {"title": "Payment", "description": "Midtrans gateway"}, {"title": "Admin Panel", "description": "Panel admin lengkap"}, {"title": "Tracking", "description": "Lacak pengiriman"}]'::jsonb,
+  'https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=1000&auto=format&fit=crop',
   'https://demo-ecommerce.vercel.app',
   false
 ),
@@ -238,6 +262,7 @@ INSERT INTO products (slug, title, short_description, description, price, catego
   'games',
   ARRAY['Flutter', 'Firebase', 'Dart'],
   '[{"title": "Categories", "description": "Berbagai kategori"}, {"title": "Timer", "description": "Mode waktu"}, {"title": "Leaderboard", "description": "Peringkat global"}, {"title": "Achievements", "description": "Unlock achievement"}, {"title": "Daily Quiz", "description": "Kuis harian"}, {"title": "Offline", "description": "Mode offline"}]'::jsonb,
+  'https://images.unsplash.com/photo-1606326666490-af558e9dfb1d?q=80&w=1000&auto=format&fit=crop',
   NULL,
   false
 )
@@ -256,7 +281,10 @@ ON CONFLICT (slug) DO UPDATE SET
 -- =============================================
 -- SEED DATA: APPS
 -- =============================================
-INSERT INTO apps (slug, title, short_description, description, download_type, download_url, has_tester, tester_group_url, tester_invite_url, rating, downloads, features, version, size, updated_date, is_featured) VALUES
+-- =============================================
+-- SEED DATA: APPS
+-- =============================================
+INSERT INTO apps (slug, title, short_description, description, download_type, download_url, has_tester, tester_group_url, tester_invite_url, rating, downloads, features, version, size, updated_date, is_featured, thumbnail_url) VALUES
 (
   'kalender-hijriah',
   'Kalender Hijriah Indonesia',
@@ -273,7 +301,8 @@ INSERT INTO apps (slug, title, short_description, description, download_type, do
   '2.5.1',
   '15 MB',
   '10 Jan 2026',
-  true
+  true,
+  'https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'puzzle-game-adventure',
@@ -291,7 +320,8 @@ INSERT INTO apps (slug, title, short_description, description, download_type, do
   '1.8.0',
   '45 MB',
   '5 Jan 2026',
-  true
+  true,
+  'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'expense-tracker',
@@ -309,7 +339,8 @@ INSERT INTO apps (slug, title, short_description, description, download_type, do
   '3.0.2',
   '12 MB',
   '15 Jan 2026',
-  false
+  false,
+  'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'quran-audio',
@@ -327,7 +358,8 @@ INSERT INTO apps (slug, title, short_description, description, download_type, do
   '4.2.0',
   '25 MB',
   '20 Jan 2026',
-  true
+  true,
+  'https://images.unsplash.com/photo-1542810634-7bc278057dc3?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'todo-reminder',
@@ -345,7 +377,8 @@ INSERT INTO apps (slug, title, short_description, description, download_type, do
   '2.1.0',
   '8 MB',
   '18 Jan 2026',
-  false
+  false,
+  'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'word-game',
@@ -363,7 +396,8 @@ INSERT INTO apps (slug, title, short_description, description, download_type, do
   '1.5.0',
   '20 MB',
   '12 Jan 2026',
-  false
+  false,
+  'https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?q=80&w=1000&auto=format&fit=crop'
 )
 ON CONFLICT (slug) DO UPDATE SET
   title = EXCLUDED.title,
@@ -380,12 +414,13 @@ ON CONFLICT (slug) DO UPDATE SET
   version = EXCLUDED.version,
   size = EXCLUDED.size,
   updated_date = EXCLUDED.updated_date,
-  is_featured = EXCLUDED.is_featured;
+  is_featured = EXCLUDED.is_featured,
+  thumbnail_url = EXCLUDED.thumbnail_url;
 
 -- =============================================
 -- SEED DATA: WEBS (Web Services)
 -- =============================================
-INSERT INTO webs (slug, title, short_description, description, demo_url, price_source_code, price_subscription, tech_stack, features, is_featured) VALUES
+INSERT INTO webs (slug, title, short_description, description, demo_url, price_source_code, price_subscription, tech_stack, features, is_featured, thumbnail_url) VALUES
 (
   'url-shortener',
   'URL Shortener Pro',
@@ -396,7 +431,8 @@ INSERT INTO webs (slug, title, short_description, description, demo_url, price_s
   'Rp 15.000',
   ARRAY['Next.js', 'Supabase', 'Tailwind CSS'],
   ARRAY['Custom URL Slug', 'Click Statistics', 'QR Code Generator', 'Bulk Shorten', 'API Access', 'Analytics Dashboard'],
-  true
+  true,
+  'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'invoice-generator',
@@ -408,7 +444,8 @@ INSERT INTO webs (slug, title, short_description, description, demo_url, price_s
   'Rp 20.000',
   ARRAY['Next.js', 'React PDF', 'Nodemailer'],
   ARRAY['Professional Templates', 'Multi Currency', 'Auto Calculate', 'Email Sending', 'PDF Export', 'Client Management'],
-  true
+  true,
+  'https://images.unsplash.com/photo-1554224154-26032ffc0d07?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'qr-menu-restaurant',
@@ -420,7 +457,8 @@ INSERT INTO webs (slug, title, short_description, description, demo_url, price_s
   'Rp 25.000',
   ARRAY['Next.js', 'Supabase', 'Tailwind CSS'],
   ARRAY['QR Code Scan', 'Multi Language', 'Real-time Update', 'Categories', 'Food Photos', 'Dynamic Pricing'],
-  true
+  true,
+  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'link-in-bio',
@@ -432,7 +470,8 @@ INSERT INTO webs (slug, title, short_description, description, demo_url, price_s
   'Rp 10.000',
   ARRAY['Next.js', 'Tailwind CSS', 'Vercel'],
   ARRAY['Custom Domain', 'Multiple Links', 'Custom Themes', 'Click Analytics', 'Social Icons', 'Responsive Design'],
-  false
+  false,
+  'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1000&auto=format&fit=crop'
 ),
 (
   'form-builder',
@@ -444,7 +483,8 @@ INSERT INTO webs (slug, title, short_description, description, demo_url, price_s
   'Rp 30.000',
   ARRAY['Next.js', 'React DnD', 'Supabase'],
   ARRAY['Drag & Drop Builder', 'Multiple Input Types', 'Email Notifications', 'Google Sheet Sync', 'Embed Forms', 'Input Validation'],
-  false
+  false,
+  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop'
 )
 ON CONFLICT (slug) DO UPDATE SET
   title = EXCLUDED.title,
@@ -470,15 +510,6 @@ INSERT INTO categories (name, slug, icon, display_order) VALUES
 ('Web Services', 'web-services', 'Server', 7)
 ON CONFLICT (slug) DO NOTHING;
 
--- =============================================
--- SEED DATA: ANNOUNCEMENTS
--- =============================================
-INSERT INTO announcements (message, is_active, display_order) VALUES
-('🎉 Promo Januari! Diskon 20% untuk semua source code hingga akhir bulan', true, 1),
-('💬 Konsultasi gratis via WhatsApp 24/7 - Tanya apapun tentang produk kami', true, 2),
-('🚀 Produk baru: Invoice Generator & QR Menu Restaurant sudah tersedia!', true, 3),
-('⚡ Gratis update minor version selamanya untuk semua produk', true, 4)
-ON CONFLICT DO NOTHING;
-
 -- Success message
-SELECT 'Seed completed! Products: ' || (SELECT COUNT(*) FROM products) || ', Apps: ' || (SELECT COUNT(*) FROM apps) || ', Webs: ' || (SELECT COUNT(*) FROM webs) || ', Announcements: ' || (SELECT COUNT(*) FROM announcements) || ', Categories: ' || (SELECT COUNT(*) FROM categories);
+SELECT 'Seed completed! Products: ' || (SELECT COUNT(*) FROM products) || ', Apps: ' || (SELECT COUNT(*) FROM apps) || ', Webs: ' || (SELECT COUNT(*) FROM webs) || ', Categories: ' || (SELECT COUNT(*) FROM categories);
+

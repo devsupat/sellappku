@@ -1,284 +1,194 @@
 'use client';
 
 import { useState } from 'react';
-import { Announcement } from '@/lib/supabase';
 import {
- createAnnouncement,
- updateAnnouncement,
- deleteAnnouncement,
- toggleAnnouncementActive,
- reorderAnnouncements,
+    Plus,
+    Trash2,
+    Eye,
+    EyeOff,
+    ArrowUp,
+    ArrowDown,
+    Save,
+    X,
+    Edit2,
+    Loader2
+} from 'lucide-react';
+import {
+    createAnnouncement,
+    updateAnnouncement,
+    deleteAnnouncement,
+    reorderAnnouncements
 } from '@/app/actions/announcements';
-import { Plus, Edit2, Trash2, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 
-interface Props {
- initialAnnouncements: Announcement[];
-}
+export function AnnouncementsClient({ initialData }: { initialData: any[] }) {
+    const [announcements, setAnnouncements] = useState(initialData);
+    const [newMsg, setNewMsg] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editMsg, setEditMsg] = useState('');
 
-export function AnnouncementsClient({ initialAnnouncements }: Props) {
- const [announcements, setAnnouncements] = useState(initialAnnouncements);
- const [isAdding, setIsAdding] = useState(false);
- const [editingId, setEditingId] = useState<string | null>(null);
- const [newMessage, setNewMessage] = useState('');
- const [editMessage, setEditMessage] = useState('');
- const [loading, setLoading] = useState(false);
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newMsg.trim()) return;
+        setLoading(true);
+        try {
+            await createAnnouncement(newMsg);
+            setNewMsg('');
+            window.location.reload();
+        } catch (err) {
+            alert('Gagal menambah pesan');
+        } finally {
+            setLoading(false);
+        }
+    };
 
- const handleAdd = async () => {
- if (!newMessage.trim()) return;
- setLoading(true);
- try {
- await createAnnouncement(newMessage);
- setNewMessage('');
- setIsAdding(false);
- window.location.reload(); // Simple reload to get fresh data
- } catch (error) {
- console.error('Failed to add announcement:', error);
- alert('Failed to add announcement');
- } finally {
- setLoading(false);
- }
- };
+    const handleToggle = async (id: string, active: boolean) => {
+        try {
+            await updateAnnouncement(id, { is_active: !active });
+            window.location.reload();
+        } catch (err) {
+            alert('Gagal mengupdate status');
+        }
+    };
 
- const handleUpdate = async (id: string) => {
- if (!editMessage.trim()) return;
- setLoading(true);
- try {
- await updateAnnouncement(id, editMessage);
- setEditingId(null);
- window.location.reload();
- } catch (error) {
- console.error('Failed to update announcement:', error);
- alert('Failed to update announcement');
- } finally {
- setLoading(false);
- }
- };
+    const handleDelete = async (id: string) => {
+        if (!confirm('Hapus pesan ini?')) return;
+        try {
+            await deleteAnnouncement(id);
+            window.location.reload();
+        } catch (err) {
+            alert('Gagal menghapus');
+        }
+    };
 
- const handleDelete = async (id: string) => {
- if (!confirm('Are you sure you want to delete this announcement?')) return;
- setLoading(true);
- try {
- await deleteAnnouncement(id);
- window.location.reload();
- } catch (error) {
- console.error('Failed to delete announcement:', error);
- alert('Failed to delete announcement');
- } finally {
- setLoading(false);
- }
- };
+    const handleMove = async (index: number, direction: 'up' | 'down') => {
+        const otherIndex = direction === 'up' ? index - 1 : index + 1;
+        if (otherIndex < 0 || otherIndex >= announcements.length) return;
 
- const handleToggleActive = async (id: string, isActive: boolean) => {
- setLoading(true);
- try {
- await toggleAnnouncementActive(id, isActive);
- window.location.reload();
- } catch (error) {
- console.error('Failed to toggle announcement:', error);
- alert('Failed to toggle announcement');
- } finally {
- setLoading(false);
- }
- };
+        const item1 = announcements[index];
+        const item2 = announcements[otherIndex];
 
- const handleMoveUp = async (index: number) => {
- if (index === 0) return;
- const newOrder = [...announcements];
- [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+        try {
+            await reorderAnnouncements(item1.id, item1.display_order, item2.id, item2.display_order);
+            window.location.reload();
+        } catch (err) {
+            alert('Gagal mengatur urutan');
+        }
+    };
 
- const updates = newOrder.map((item, idx) => ({
- id: item.id,
- display_order: idx + 1,
- }));
+    const handleSaveEdit = async (id: string) => {
+        try {
+            await updateAnnouncement(id, { message: editMsg });
+            setEditingId(null);
+            window.location.reload();
+        } catch (err) {
+            alert('Gagal menyimpan');
+        }
+    };
 
- setLoading(true);
- try {
- await reorderAnnouncements(updates);
- window.location.reload();
- } catch (error) {
- console.error('Failed to reorder:', error);
- alert('Failed to reorder');
- } finally {
- setLoading(false);
- }
- };
+    return (
+        <div className="space-y-6">
+            {/* Add Form */}
+            <form onSubmit={handleAdd} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex gap-4">
+                <input
+                    type="text"
+                    required
+                    placeholder="Tulis pesan pengumuman baru..."
+                    value={newMsg}
+                    onChange={(e) => setNewMsg(e.target.value)}
+                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                />
+                <button
+                    disabled={loading}
+                    className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 disabled:bg-indigo-400 transition-all flex items-center gap-2 shrink-0"
+                >
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />}
+                    Add Announcement
+                </button>
+            </form>
 
- const handleMoveDown = async (index: number) => {
- if (index === announcements.length - 1) return;
- const newOrder = [...announcements];
- [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+            {/* List */}
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="divide-y divide-gray-100">
+                    {announcements.map((item, index) => (
+                        <div key={item.id} className="p-6 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                            <div className="flex flex-col gap-1">
+                                <button
+                                    onClick={() => handleMove(index, 'up')}
+                                    disabled={index === 0}
+                                    className="p-1 text-gray-400 hover:text-indigo-600 disabled:opacity-0"
+                                >
+                                    <ArrowUp className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={() => handleMove(index, 'down')}
+                                    disabled={index === announcements.length - 1}
+                                    className="p-1 text-gray-400 hover:text-indigo-600 disabled:opacity-0"
+                                >
+                                    <ArrowDown className="h-4 w-4" />
+                                </button>
+                            </div>
 
- const updates = newOrder.map((item, idx) => ({
- id: item.id,
- display_order: idx + 1,
- }));
+                            <div className="flex-1">
+                                {editingId === item.id ? (
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={editMsg}
+                                            onChange={(e) => setEditMsg(e.target.value)}
+                                            className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            autoFocus
+                                        />
+                                        <button onClick={() => handleSaveEdit(item.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg">
+                                            <Save className="h-5 w-5" />
+                                        </button>
+                                        <button onClick={() => setEditingId(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg">
+                                            <X className="h-5 w-5" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <p className={`text-gray-900 font-medium ${!item.is_active && 'text-gray-400 line-through'}`}>
+                                        {item.message}
+                                    </p>
+                                )}
+                            </div>
 
- setLoading(true);
- try {
- await reorderAnnouncements(updates);
- window.location.reload();
- } catch (error) {
- console.error('Failed to reorder:', error);
- alert('Failed to reorder');
- } finally {
- setLoading(false);
- }
- };
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => {
+                                        setEditingId(item.id);
+                                        setEditMsg(item.message);
+                                    }}
+                                    className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                >
+                                    <Edit2 className="h-5 w-5" />
+                                </button>
+                                <button
+                                    onClick={() => handleToggle(item.id, item.is_active)}
+                                    className={`p-2 rounded-lg transition-colors ${item.is_active
+                                            ? 'text-green-600 hover:bg-green-50'
+                                            : 'text-gray-400 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {item.is_active ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                >
+                                    <Trash2 className="h-5 w-5" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
- return (
- <div className="space-y-4">
- {/* Add New Button */}
- <div className="flex justify-end">
- <button
- onClick={() => setIsAdding(true)}
- className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover text-white font-medium rounded-lg transition-colors"
- >
- <Plus className="h-5 w-5" />
- Add Announcement
- </button>
- </div>
-
- {/* Add Form */}
- {isAdding && (
- <div className="bg-white rounded-xl p-6 border border-gray-200 ">
- <h3 className="font-semibold text-gray-900 mb-4">New Announcement</h3>
- <textarea
- value={newMessage}
- onChange={(e) => setNewMessage(e.target.value)}
- placeholder="Enter announcement message..."
- className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 mb-4 resize-none"
- rows={3}
- autoFocus
- />
- <div className="flex gap-2">
- <button
- onClick={handleAdd}
- disabled={loading || !newMessage.trim()}
- className="px-4 py-2 bg-indigo-600 hover disabled text-white font-medium rounded-lg transition-colors"
- >
- {loading ? 'Adding...' : 'Add'}
- </button>
- <button
- onClick={() => {
- setIsAdding(false);
- setNewMessage('');
- }}
- disabled={loading}
- className="px-4 py-2 bg-gray-200 hover text-gray-900 font-medium rounded-lg transition-colors"
- >
- Cancel
- </button>
- </div>
- </div>
- )}
-
- {/* Announcements List */}
- <div className="space-y-3">
- {announcements.length === 0 ? (
- <div className="bg-white rounded-xl p-8 border border-gray-200 text-center">
- <p className="text-gray-500 ">No announcements yet</p>
- </div>
- ) : (
- announcements.map((announcement, index) => (
- <div
- key={announcement.id}
- className={`bg-white rounded-xl p-4 border ${announcement.is_active
- ? 'border-gray-200 '
- : 'border-gray-300 opacity-60'
- }`}
- >
- {editingId === announcement.id ? (
- <div>
- <textarea
- value={editMessage}
- onChange={(e) => setEditMessage(e.target.value)}
- className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 mb-3 resize-none"
- rows={3}
- autoFocus
- />
- <div className="flex gap-2">
- <button
- onClick={() => handleUpdate(announcement.id)}
- disabled={loading}
- className="px-3 py-1.5 bg-indigo-600 hover text-white text-sm font-medium rounded-lg"
- >
- Save
- </button>
- <button
- onClick={() => {
- setEditingId(null);
- setEditMessage('');
- }}
- disabled={loading}
- className="px-3 py-1.5 bg-gray-200 text-gray-900 text-sm font-medium rounded-lg"
- >
- Cancel
- </button>
- </div>
- </div>
- ) : (
- <div className="flex items-center gap-4">
- {/* Order Controls */}
- <div className="flex flex-col gap-1">
- <button
- onClick={() => handleMoveUp(index)}
- disabled={index === 0 || loading}
- className="p-1 hover rounded disabled"
- >
- <ChevronUp className="h-4 w-4 text-gray-600" />
- </button>
- <button
- onClick={() => handleMoveDown(index)}
- disabled={index === announcements.length - 1 || loading}
- className="p-1 hover rounded disabled"
- >
- <ChevronDown className="h-4 w-4 text-gray-600" />
- </button>
- </div>
-
- {/* Message */}
- <div className="flex-1">
- <p className="text-gray-900 ">{announcement.message}</p>
- </div>
-
- {/* Actions */}
- <div className="flex items-center gap-2">
- <button
- onClick={() => handleToggleActive(announcement.id, announcement.is_active)}
- disabled={loading}
- className="p-2 hover rounded-lg transition-colors"
- title={announcement.is_active ? 'Hide' : 'Show'}
- >
- {announcement.is_active ? (
- <Eye className="h-5 w-5 text-green-600" />
- ) : (
- <EyeOff className="h-5 w-5 text-gray-400" />
- )}
- </button>
- <button
- onClick={() => {
- setEditingId(announcement.id);
- setEditMessage(announcement.message);
- }}
- disabled={loading}
- className="p-2 hover rounded-lg transition-colors"
- >
- <Edit2 className="h-5 w-5 text-indigo-600" />
- </button>
- <button
- onClick={() => handleDelete(announcement.id)}
- disabled={loading}
- className="p-2 hover rounded-lg transition-colors"
- >
- <Trash2 className="h-5 w-5 text-red-600" />
- </button>
- </div>
- </div>
- )}
- </div>
- ))
- )}
- </div>
- </div>
- );
+                {announcements.length === 0 && (
+                    <div className="p-12 text-center text-gray-500">
+                        Belum ada pengumuman. Tambahkan di atas!
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }

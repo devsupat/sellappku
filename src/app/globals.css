@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Brand Colors */
   --color-violet-50: #f5f3ff;
@@ -27,18 +29,28 @@
   /* Background */
   --background: #ffffff;
   --foreground: #0f172a;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+}
+
+.dark {
+  --background: #030712;
+  --foreground: #f8fafc;
+  --card-bg: #0f172a;
+  --border-color: #1e293b;
 }
 
 html {
   scroll-behavior: smooth;
-  background: white;
-  color: #0f172a;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 body {
-  background: white;
-  color: #0f172a;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom Scrollbar */

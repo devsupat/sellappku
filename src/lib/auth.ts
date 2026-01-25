@@ -1,37 +1,27 @@
 import { cookies } from 'next/headers';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
-const SESSION_COOKIE_NAME = 'sellappku_admin_session';
+const SESSION_COOKIE = 'admin_session';
 
-export async function verifyAdminPassword(password: string): Promise<boolean> {
-    return password === ADMIN_PASSWORD;
+export async function login(password: string) {
+    if (password === process.env.ADMIN_PASSWORD) {
+        const cookieStore = await cookies();
+        cookieStore.set(SESSION_COOKIE, 'authenticated', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24, // 24 hours
+        });
+        return true;
+    }
+    return false;
 }
 
-export async function createAdminSession(): Promise<void> {
+export async function logout() {
     const cookieStore = await cookies();
-    // Simple session token (in production, use JWT or encrypted token)
-    const sessionToken = Buffer.from(`admin:${Date.now()}`).toString('base64');
-
-    cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: '/',
-    });
+    cookieStore.delete(SESSION_COOKIE);
 }
 
-export async function getAdminSession(): Promise<string | undefined> {
+export async function isAuthenticated() {
     const cookieStore = await cookies();
-    return cookieStore.get(SESSION_COOKIE_NAME)?.value;
-}
-
-export async function deleteAdminSession(): Promise<void> {
-    const cookieStore = await cookies();
-    cookieStore.delete(SESSION_COOKIE_NAME);
-}
-
-export async function isAdminAuthenticated(): Promise<boolean> {
-    const session = await getAdminSession();
-    return !!session;
+    return cookieStore.has(SESSION_COOKIE);
 }

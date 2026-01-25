@@ -1,47 +1,33 @@
 'use server';
 
-import { supabase, Announcement } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 
-export async function getAnnouncements(): Promise<Announcement[]> {
-    const { data, error } = await supabase
-        .from('announcements')
-        .select('*')
-        .order('display_order', { ascending: true });
-
-    if (error) throw error;
-    return data || [];
-}
-
 export async function createAnnouncement(message: string) {
-    // Get max display_order
-    const { data: maxData } = await supabase
-        .from('announcements')
-        .select('display_order')
-        .order('display_order', { ascending: false })
-        .limit(1)
-        .single();
-
-    const nextOrder = (maxData?.display_order || 0) + 1;
-
     const { error } = await supabase
         .from('announcements')
-        .insert({ message, display_order: nextOrder });
+        .insert([{ message, is_active: true, display_order: 0 }]);
 
-    if (error) throw error;
-    revalidatePath('/admin/announcements');
+    if (error) {
+        console.error('Error creating announcement:', error);
+        throw error;
+    }
     revalidatePath('/');
+    revalidatePath('/admin/announcements');
 }
 
-export async function updateAnnouncement(id: string, message: string) {
+export async function updateAnnouncement(id: string, updates: any) {
     const { error } = await supabase
         .from('announcements')
-        .update({ message })
+        .update(updates)
         .eq('id', id);
 
-    if (error) throw error;
-    revalidatePath('/admin/announcements');
+    if (error) {
+        console.error('Error updating announcement:', error);
+        throw error;
+    }
     revalidatePath('/');
+    revalidatePath('/admin/announcements');
 }
 
 export async function deleteAnnouncement(id: string) {
@@ -50,32 +36,26 @@ export async function deleteAnnouncement(id: string) {
         .delete()
         .eq('id', id);
 
-    if (error) throw error;
-    revalidatePath('/admin/announcements');
+    if (error) {
+        console.error('Error deleting announcement:', error);
+        throw error;
+    }
     revalidatePath('/');
+    revalidatePath('/admin/announcements');
 }
 
-export async function toggleAnnouncementActive(id: string, isActive: boolean) {
-    const { error } = await supabase
+export async function reorderAnnouncements(id1: string, order1: number, id2: string, order2: number) {
+    const { error: error1 } = await supabase
         .from('announcements')
-        .update({ is_active: !isActive })
-        .eq('id', id);
+        .update({ display_order: order2 })
+        .eq('id', id1);
 
-    if (error) throw error;
-    revalidatePath('/admin/announcements');
+    const { error: error2 } = await supabase
+        .from('announcements')
+        .update({ display_order: order1 })
+        .eq('id', id2);
+
+    if (error1 || error2) throw error1 || error2;
     revalidatePath('/');
-}
-
-export async function reorderAnnouncements(items: { id: string; display_order: number }[]) {
-    // Update all in parallel
-    const updates = items.map(item =>
-        supabase
-            .from('announcements')
-            .update({ display_order: item.display_order })
-            .eq('id', item.id)
-    );
-
-    await Promise.all(updates);
     revalidatePath('/admin/announcements');
-    revalidatePath('/');
 }

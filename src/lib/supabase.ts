@@ -83,7 +83,9 @@ export interface Web {
 export interface Announcement {
   id: string;
   message: string;
+  type: 'info' | 'warning' | 'success';
   is_active: boolean;
   display_order: number;
   created_at: string;
 }
+

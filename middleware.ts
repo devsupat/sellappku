@@ -2,31 +2,21 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+    const session = request.cookies.get('admin_session')?.value;
+    const isLoginPage = request.nextUrl.pathname === '/admin/login';
+    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
 
-    // Protect /admin routes (except login page)
-    if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-        const session = request.cookies.get('sellappku_admin_session');
-
-        if (!session) {
-            return NextResponse.redirect(new URL('/admin/login', request.url));
-        }
+    if (isAdminRoute && !isLoginPage && !session) {
+        return NextResponse.redirect(new URL('/admin/login', request.url));
     }
 
-    // Redirect to dashboard if already logged in and trying to access login
-    if (pathname === '/admin/login') {
-        const session = request.cookies.get('sellappku_admin_session');
-
-        if (session) {
-            return NextResponse.redirect(new URL('/admin', request.url));
-        }
+    if (isLoginPage && session) {
+        return NextResponse.redirect(new URL('/admin', request.url));
     }
 
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: [
-        '/admin/:path*',
-    ],
+    matcher: ['/admin/:path*'],
 };

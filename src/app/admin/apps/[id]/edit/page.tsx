@@ -1,38 +1,30 @@
 import { AppForm } from '@/components/admin/app-form';
+import { updateApp } from '@/app/actions/apps';
 import { supabase } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 
-async function getApp(id: string) {
- const { data, error } = await supabase
- .from('apps')
- .select('*')
- .eq('id', id)
- .single();
-
- if (error || !data) return null;
- return data;
-}
-
 export default async function EditAppPage({ params }: { params: Promise<{ id: string }> }) {
- const { id } = await params;
- const app = await getApp(id);
+    const { id } = await params;
+    const { data: app } = await supabase
+        .from('apps')
+        .select('*')
+        .eq('id', id)
+        .single();
 
- if (!app) {
- notFound();
- }
+    if (!app) notFound();
 
- return (
- <div>
- <div className="mb-8">
- <h1 className="text-3xl font-bold text-gray-900 mb-2">
- Edit App
- </h1>
- <p className="text-gray-600 ">
- Modify app details for {app.title}
- </p>
- </div>
+    const updateAction = async (data: any) => {
+        'use server';
+        await updateApp(id, data);
+    };
 
- <AppForm initialData={app} />
- </div>
- );
+    return (
+        <div className="space-y-8">
+            <div>
+                <h1 className="text-3xl font-bold text-gray-900">Edit App</h1>
+                <p className="text-gray-500 mt-2">Ubah detail aplikasi "{app.title}".</p>
+            </div>
+            <AppForm initialData={app} onSubmit={updateAction} />
+        </div>
+    );
 }
