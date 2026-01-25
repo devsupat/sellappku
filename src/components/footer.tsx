@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Code2, Mail, MessageCircle, Github, Instagram } from 'lucide-react';
+import { Code2, Mail, MessageCircle, Instagram } from 'lucide-react';
 
 const footerLinks = {
     produk: [
@@ -46,10 +46,22 @@ export function Footer() {
                                 <Mail className="h-4 w-4" />
                             </a>
                             <a
-                                href="#"
+                                href="https://www.tiktok.com/@scenecrafter"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="p-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors"
                             >
-                                <Github className="h-4 w-4" />
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="h-4 w-4"
+                                >
+                                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                                </svg>
                             </a>
                             <a
                                 href="https://www.instagram.com/scenecrafter/"
