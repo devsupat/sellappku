@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Code2, Smartphone, Globe } from 'lucide-react';
-import { Product, App, Web } from '@/lib/supabase';
+import { ArrowRight, Code2, Smartphone, Globe, Gamepad2 } from 'lucide-react';
+import { Product, App, Web, Game } from '@/lib/supabase';
 
 interface RelatedItemsProps {
     title: string;
-    items: (Product | App | Web)[];
-    type: 'products' | 'apps' | 'webs';
+    items: (Product | App | Web | Game)[];
+    type: 'products' | 'apps' | 'webs' | 'games';
 }
 
 export function RelatedItems({ title, items, type }: RelatedItemsProps) {
@@ -48,6 +48,8 @@ export function RelatedItems({ title, items, type }: RelatedItemsProps) {
                                         <Code2 className="h-12 w-12 text-indigo-200" />
                                     ) : type === 'apps' ? (
                                         <Smartphone className="h-12 w-12 text-indigo-200" />
+                                    ) : type === 'games' ? (
+                                        <Gamepad2 className="h-12 w-12 text-indigo-200" />
                                     ) : (
                                         <Globe className="h-12 w-12 text-indigo-200" />
                                     )}

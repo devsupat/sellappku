@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, Code2, Smartphone, Globe, User } from 'lucide-react';
+import { Menu, X, Code2, Smartphone, Globe, User, Gamepad2 } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 
 const navLinks = [
     { href: '/products', label: 'Source Code', icon: Code2 },
     { href: '/apps', label: 'Apps', icon: Smartphone },
+    { href: '/games', label: 'Games', icon: Gamepad2 },
     { href: '/webs', label: 'Web Services', icon: Globe },
     { href: '/about', label: 'About', icon: User },
 ];

@@ -1,4 +1,4 @@
-import { supabase, Product, App, Web, Announcement } from './supabase';
+import { supabase, Product, App, Web, Game, Announcement } from './supabase';
 
 // Products
 export async function getProducts(): Promise<Product[]> {
@@ -196,6 +196,68 @@ export async function getRelatedWebs(currentSlug: string): Promise<Web[]> {
     }
     return data || [];
 }
+
+// Games
+export async function getGames(): Promise<Game[]> {
+    const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching games:', error);
+        return [];
+    }
+    return data || [];
+}
+
+export async function getFeaturedGames(): Promise<Game[]> {
+    const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('is_active', true)
+        .eq('is_featured', true)
+        .limit(6);
+
+    if (error) {
+        console.error('Error fetching featured games:', error);
+        return [];
+    }
+    return data || [];
+}
+
+export async function getGameBySlug(slug: string): Promise<Game | null> {
+    const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .single();
+
+    if (error) {
+        console.error('Error fetching game:', error);
+        return null;
+    }
+    return data;
+}
+
+export async function getRelatedGames(genre: string, currentSlug: string): Promise<Game[]> {
+    const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('is_active', true)
+        .eq('genre', genre)
+        .neq('slug', currentSlug)
+        .limit(4);
+
+    if (error) {
+        console.error('Error fetching related games:', error);
+        return [];
+    }
+    return data || [];
+}
+
 // Announcements
 export async function getActiveAnnouncements(): Promise<Announcement[]> {
     const { data, error } = await supabase

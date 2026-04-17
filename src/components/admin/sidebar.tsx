@@ -8,6 +8,7 @@ import {
     Smartphone,
     Globe,
     Megaphone,
+    Gamepad2,
     LogOut,
     Code2,
     Menu,
@@ -20,6 +21,7 @@ const menuItems = [
     { icon: Megaphone, label: 'Announcements', href: '/admin/announcements' },
     { icon: Package, label: 'Products', href: '/admin/products' },
     { icon: Smartphone, label: 'Apps', href: '/admin/apps' },
+    { icon: Gamepad2, label: 'Games', href: '/admin/games' },
     { icon: Globe, label: 'Web Services', href: '/admin/webs' },
 ];
 

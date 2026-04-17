@@ -54,6 +54,28 @@ export interface App {
 }
 
 
+export interface Game {
+  id: string;
+  slug: string;
+  title: string;
+  short_description: string;
+  description: string | null;
+  genre: string;
+  platform: string;
+  thumbnail_url: string | null;
+  screenshots: { url: string; caption: string }[] | null;
+  download_url: string | null;
+  download_type: 'playstore' | 'drive' | 'mediafire' | 'other';
+  rating: number;
+  downloads: string;
+  version: string | null;
+  size: string | null;
+  features: string[];
+  is_featured: boolean;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface Category {
   id: string;
   name: string;
