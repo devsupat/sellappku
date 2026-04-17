@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Smartphone, Plus } from 'lucide-react';
+import { FeatureManager } from './feature-manager';
+import { ScreenshotManager } from './screenshot-manager';
 
 interface AppFormProps {
     initialData?: any;
@@ -30,9 +32,8 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
         is_featured: initialData?.is_featured || false,
         is_active: initialData?.is_active ?? true,
         features: initialData?.features || [],
+        screenshots: initialData?.screenshots || [],
     });
-
-    const [newFeature, setNewFeature] = useState('');
 
     // Auto-sanitize slug: lowercase, spaces to hyphens, remove special chars
     const sanitizeSlug = (value: string) =>
@@ -63,13 +64,6 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
             alert('Terjadi kesalahan saat menyimpan data');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const addFeature = () => {
-        if (newFeature && !formData.features.includes(newFeature)) {
-            setFormData({ ...formData, features: [...formData.features, newFeature] });
-            setNewFeature('');
         }
     };
 
@@ -111,6 +105,25 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
                 />
             </div>
 
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description / Detailed Copy (Markdown supported)</label>
+                <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all min-h-[200px]"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Thumbnail URL</label>
+                <input
+                    type="url"
+                    value={formData.thumbnail_url}
+                    onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Download Type</label>
@@ -137,7 +150,63 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
                 </div>
             </div>
 
-            <div className="flex gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Rating</label>
+                    <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="5"
+                        value={formData.rating}
+                        onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Downloads</label>
+                    <input
+                        type="text"
+                        value={formData.downloads}
+                        onChange={(e) => setFormData({ ...formData, downloads: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Version</label>
+                    <input
+                        type="text"
+                        value={formData.version}
+                        onChange={(e) => setFormData({ ...formData, version: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Size</label>
+                    <input
+                        type="text"
+                        value={formData.size}
+                        onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    />
+                </div>
+            </div>
+
+            <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mt-8">
+                <FeatureManager 
+                    features={formData.features} 
+                    onChange={(features) => setFormData({ ...formData, features })} 
+                />
+            </div>
+
+            <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mt-8">
+                <ScreenshotManager 
+                    screenshots={formData.screenshots} 
+                    onChange={(screenshots) => setFormData({ ...formData, screenshots })} 
+                />
+            </div>
+
+            <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mt-8 flex flex-wrap gap-6">
                 <label className="flex items-center gap-2 cursor-pointer">
                     <input
                         type="checkbox"

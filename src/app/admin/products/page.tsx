@@ -28,8 +28,9 @@ export default async function AdminProductsPage() {
             </div>
 
             <div className="bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left border-collapse min-w-[800px]">
+                        <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
                         <tr>
                             <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
                             <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
@@ -91,7 +92,8 @@ export default async function AdminProductsPage() {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                    </table>
+                </div>
 
                 {(!products || products.length === 0) && (
                     <div className="p-12 text-center text-gray-500 dark:text-gray-400">

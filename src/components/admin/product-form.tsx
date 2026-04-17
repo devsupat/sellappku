@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Plus, Code2 } from 'lucide-react';
+import { FeatureManager, Feature } from './feature-manager';
+import { ScreenshotManager } from './screenshot-manager';
 
 interface ProductFormData {
     title: string;
@@ -17,7 +19,7 @@ interface ProductFormData {
     is_featured: boolean;
     is_active: boolean;
     tech_stack: string[];
-    features: string[];
+    features: Feature[];
     screenshots: string[];
 }
 
@@ -156,16 +158,59 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Thumbnail URL</label>
-                <input
-                    type="url"
-                    required
-                    value={formData.thumbnail_url}
-                    onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                    placeholder="https://example.com/image.jpg"
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description / Detailed Marketing Copy (Markdown supported)</label>
+                <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all min-h-[200px]"
+                    placeholder="Full product descriptions, features, requirements..."
                 />
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Thumbnail URL</label>
+                    <input
+                        type="url"
+                        required
+                        value={formData.thumbnail_url}
+                        onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        placeholder="https://example.com/image.jpg"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Demo URL</label>
+                    <input
+                        type="url"
+                        value={formData.demo_url}
+                        onChange={(e) => setFormData({ ...formData, demo_url: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        placeholder="https://example.com/demo"
+                    />
+                </div>
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Video URL</label>
+                <input
+                    type="url"
+                    value={formData.video_url}
+                    onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    placeholder="https://youtube.com/..."
+                />
+            </div>
+
+                <FeatureManager 
+                    features={formData.features} 
+                    onChange={(features) => setFormData({ ...formData, features })} 
+                />
+
+                <ScreenshotManager 
+                    screenshots={formData.screenshots} 
+                    onChange={(screenshots) => setFormData({ ...formData, screenshots })} 
+                />
 
             <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tech Stack</label>

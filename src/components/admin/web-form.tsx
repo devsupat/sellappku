@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Globe } from 'lucide-react';
+import { Loader2, Globe, Plus } from 'lucide-react';
+import { FeatureManager, Feature } from './feature-manager';
 
 interface WebFormData {
     title: string;
@@ -14,7 +15,7 @@ interface WebFormData {
     price_source_code: string;
     price_subscription: string;
     tech_stack: string[];
-    features: string[];
+    features: Feature[];
     is_featured: boolean;
     is_active: boolean;
 }
@@ -143,6 +144,15 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
             </div>
 
             <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description / Detailed Copy (Markdown supported)</label>
+                <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all min-h-[200px]"
+                />
+            </div>
+
+            <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Thumbnail URL</label>
                 <input
                     type="url"
@@ -184,7 +194,14 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
                 </div>
             </div>
 
-            <div className="flex gap-6">
+            <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mt-8">
+                <FeatureManager 
+                    features={formData.features} 
+                    onChange={(features) => setFormData({ ...formData, features })} 
+                />
+            </div>
+
+            <div className="flex gap-6 pt-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                     <input
                         type="checkbox"
