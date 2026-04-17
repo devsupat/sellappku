@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Smartphone, Plus } from 'lucide-react';
-import { FeatureManager } from './feature-manager';
+import { StringListManager } from './string-list-manager';
 import { ScreenshotManager } from './screenshot-manager';
 
 interface AppFormProps {
@@ -193,8 +193,10 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
             </div>
 
             <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mt-8">
-                <FeatureManager 
-                    features={formData.features} 
+                <StringListManager 
+                    label="Fitur Utama"
+                    placeholder="Contoh: Real-time Analytics"
+                    items={formData.features} 
                     onChange={(features) => setFormData({ ...formData, features })} 
                 />
             </div>

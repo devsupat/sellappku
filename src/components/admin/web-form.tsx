@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Globe, Plus } from 'lucide-react';
-import { FeatureManager, Feature } from './feature-manager';
+import { StringListManager } from './string-list-manager';
 
 interface WebFormData {
     title: string;
@@ -15,7 +15,7 @@ interface WebFormData {
     price_source_code: string;
     price_subscription: string;
     tech_stack: string[];
-    features: Feature[];
+    features: string[];
     is_featured: boolean;
     is_active: boolean;
 }
@@ -195,8 +195,10 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
             </div>
 
             <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mt-8">
-                <FeatureManager 
-                    features={formData.features} 
+                <StringListManager 
+                    label="Fitur Utama"
+                    placeholder="Contoh: Admin Panel"
+                    items={formData.features} 
                     onChange={(features) => setFormData({ ...formData, features })} 
                 />
             </div>
