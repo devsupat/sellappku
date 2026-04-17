@@ -34,7 +34,7 @@ const DOWNLOAD_TYPE_OPTIONS = [
 
 interface GameFormProps {
     initialData?: any;
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: any) => Promise<{ success: boolean; error?: string; data?: any } | void>;
 }
 
 export function GameForm({ initialData, onSubmit }: GameFormProps) {
@@ -80,12 +80,21 @@ export function GameForm({ initialData, onSubmit }: GameFormProps) {
         e.preventDefault();
         setLoading(true);
         try {
-            await onSubmit(formData);
+            const result = await onSubmit(formData);
+            
+            // Handle new return format { success, error }
+            if (result && typeof result === 'object' && 'success' in result && !result.success) {
+                console.error('Error submitting game:', result.error);
+                alert(`Gagal menyimpan: ${result.error}`);
+                setLoading(false);
+                return;
+            }
+
             router.push('/admin/games');
             router.refresh();
-        } catch (error) {
-            console.error('Error submitting game:', error);
-            alert('Gagal menyimpan data game. Silakan coba lagi.');
+        } catch (error: any) {
+            console.error('Unexpected error submitting game:', error);
+            alert(`Terjadi kesalahan tak terduga: ${error.message || 'Silakan coba lagi.'}`);
         } finally {
             setLoading(false);
         }

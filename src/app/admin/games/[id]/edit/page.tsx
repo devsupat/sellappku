@@ -15,7 +15,7 @@ export default async function EditGamePage({ params }: { params: Promise<{ id: s
 
     const updateAction = async (data: any) => {
         'use server';
-        await updateGame(id, data);
+        return await updateGame(id, data);
     };
 
     return (

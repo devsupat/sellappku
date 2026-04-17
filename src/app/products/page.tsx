@@ -14,8 +14,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
-import { Product } from '@/lib/supabase';
-import { getProducts } from '@/lib/data';
+import { Product, Game, App, Web } from '@/lib/supabase';
+import { getProducts, getGames, getApps, getWebs } from '@/lib/data';
 
 // Categories
 const categories = [
@@ -30,34 +30,73 @@ const categories = [
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
+    const [games, setGames] = useState<Game[]>([]);
+    const [apps, setApps] = useState<App[]>([]);
+    const [webs, setWebs] = useState<Web[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [showMobileFilter, setShowMobileFilter] = useState(false);
 
-    // Fetch products from Supabase
+    // Fetch data from Supabase
     useEffect(() => {
-        async function fetchProducts() {
+        async function fetchData() {
             try {
-                const data = await getProducts();
-                setProducts(data);
+                const [productsData, gamesData, appsData, websData] = await Promise.all([
+                    getProducts(),
+                    getGames(),
+                    getApps(),
+                    getWebs()
+                ]);
+                setProducts(productsData);
+                setGames(gamesData);
+                setApps(appsData);
+                setWebs(websData);
             } catch (error) {
-                console.error('Error fetching products:', error);
+                console.error('Error fetching data:', error);
             } finally {
                 setLoading(false);
             }
         }
-        fetchProducts();
+        fetchData();
     }, []);
 
-    const filteredProducts = useMemo(() => {
-        return products.filter((product) => {
-            const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                product.short_description.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    const filteredItems = useMemo(() => {
+        // Combine all data sources
+        const allItems = [
+            ...products.map(p => ({ ...p, type: 'product' as const })),
+            ...games.map(g => ({ 
+                ...g, 
+                type: 'game' as const, 
+                category: 'games', 
+                price: g.downloads || 'Free Download'
+            })),
+            ...apps.map(a => ({
+                ...a,
+                type: 'app' as const,
+                category: 'mobile-apps',
+                price: a.downloads || 'Get App'
+            })),
+            ...webs.map(w => ({
+                ...w,
+                type: 'web' as const,
+                category: 'web-apps',
+                price: 'Services'
+            }))
+        ];
+
+        return allItems.filter((item) => {
+            const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.short_description.toLowerCase().includes(searchQuery.toLowerCase());
+            
+            const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+            
             return matchesSearch && matchesCategory;
         });
-    }, [products, searchQuery, selectedCategory]);
+    }, [products, games, apps, webs, searchQuery, selectedCategory]);
+
+    // Re-use current display logic but with filteredItems instead of filteredProducts
+    const displayItems = filteredItems;
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -117,7 +156,7 @@ export default function ProductsPage() {
                     {/* Mobile Filter Button */}
                     <div className="lg:hidden flex items-center justify-between mb-4">
                         <p className="text-gray-600 dark:text-gray-400">
-                            {loading ? 'Memuat...' : `${filteredProducts.length} produk ditemukan`}
+                            {loading ? 'Memuat...' : `${displayItems.length} produk ditemukan`}
                         </p>
                         <button
                             onClick={() => setShowMobileFilter(true)}
@@ -168,7 +207,7 @@ export default function ProductsPage() {
                     <div className="flex-1">
                         <div className="hidden lg:flex items-center justify-between mb-6">
                             <p className="text-gray-600 dark:text-gray-400">
-                                {loading ? 'Memuat produk...' : `${filteredProducts.length} produk ditemukan`}
+                                {loading ? 'Memuat produk...' : `${displayItems.length} produk ditemukan`}
                             </p>
                         </div>
 
@@ -177,19 +216,24 @@ export default function ProductsPage() {
                                 <Loader2 className="h-8 w-8 animate-spin text-violet-600 dark:text-violet-400" />
                                 <span className="ml-3 text-gray-600 dark:text-gray-400">Memuat produk...</span>
                             </div>
-                        ) : filteredProducts.length > 0 ? (
+                        ) : displayItems.length > 0 ? (
                             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {filteredProducts.map((product) => (
+                                {displayItems.map((item) => (
                                     <Link
-                                        key={product.id}
-                                        href={`/products/${product.slug}`}
+                                        key={item.id}
+                                        href={
+                                            item.type === 'game' ? `/games/${item.slug}` : 
+                                            item.type === 'app' ? `/apps/${item.slug}` :
+                                            item.type === 'web' ? `/webs/${item.slug}` :
+                                            `/products/${item.slug}`
+                                        }
                                         className="group bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent dark:border-gray-800 card-hover"
                                     >
                                         <div className="relative aspect-video bg-gradient-to-br from-violet-100 to-indigo-100 overflow-hidden">
-                                            {product.thumbnail_url ? (
+                                            {item.thumbnail_url ? (
                                                 <Image
-                                                    src={product.thumbnail_url}
-                                                    alt={product.title}
+                                                    src={item.thumbnail_url}
+                                                    alt={item.title}
                                                     fill
                                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -199,7 +243,7 @@ export default function ProductsPage() {
                                                     <Code2 className="h-16 w-16 text-violet-300" />
                                                 </div>
                                             )}
-                                            {product.is_featured && (
+                                            {item.is_featured && (
                                                 <div className="absolute top-4 right-4 z-10">
                                                     <span className="badge badge-amber">Featured</span>
                                                 </div>
@@ -208,23 +252,41 @@ export default function ProductsPage() {
 
                                         {/* Content */}
                                         <div className="p-6">
-                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                                                {product.title}
-                                            </h3>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                                                    {item.title}
+                                                </h3>
+                                                {item.type === 'game' && (
+                                                    <span className="text-[10px] px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full font-bold uppercase tracking-wider">
+                                                        Game
+                                                    </span>
+                                                )}
+                                                {item.type === 'app' && (
+                                                    <span className="text-[10px] px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full font-bold uppercase tracking-wider">
+                                                        App
+                                                    </span>
+                                                )}
+                                                {item.type === 'web' && (
+                                                    <span className="text-[10px] px-2 py-0.5 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-full font-bold uppercase tracking-wider">
+                                                        Web
+                                                    </span>
+                                                )}
+                                            </div>
                                             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                                                {product.short_description}
+                                                {item.short_description}
                                             </p>
 
-                                            {/* Tech Stack */}
+                                            {/* Tech Stack / Genre */}
                                             <div className="flex flex-wrap gap-2 mb-4">
-                                                {product.tech_stack?.slice(0, 3).map((tech, i) => (
-                                                    <span key={i} className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400">
-                                                        {tech}
-                                                    </span>
-                                                ))}
-                                                {product.tech_stack && product.tech_stack.length > 3 && (
+                                                {item.type === 'product' ? (
+                                                    item.tech_stack?.slice(0, 3).map((tech, i) => (
+                                                        <span key={i} className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400">
+                                                            {tech}
+                                                        </span>
+                                                    ))
+                                                ) : (
                                                     <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400">
-                                                        +{product.tech_stack.length - 3}
+                                                        {(item as any).genre}
                                                     </span>
                                                 )}
                                             </div>
@@ -232,7 +294,7 @@ export default function ProductsPage() {
                                             {/* Price */}
                                             <div className="flex items-center justify-between">
                                                 <span className="text-xl font-bold text-violet-600 dark:text-violet-400">
-                                                    {product.price}
+                                                    {item.price}
                                                 </span>
                                                 <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors" />
                                             </div>
