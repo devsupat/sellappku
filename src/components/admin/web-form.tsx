@@ -29,6 +29,24 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
 
     const [newTech, setNewTech] = useState('');
 
+    // Auto-sanitize slug: lowercase, spaces to hyphens, remove special chars
+    const sanitizeSlug = (value: string) =>
+        value
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+
+    // Auto-generate slug from title if creating new
+    const handleTitleChange = (value: string) => {
+        const updated: any = { title: value };
+        if (!initialData?.slug) {
+            updated.slug = sanitizeSlug(value);
+        }
+        setFormData((prev) => ({ ...prev, ...updated }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -60,19 +78,22 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
                         type="text"
                         required
                         value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) => handleTitleChange(e.target.value)}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Slug</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Slug <span className="text-xs font-normal text-gray-400">(huruf kecil, strip, tanpa spasi)</span>
+                    </label>
                     <input
                         type="text"
                         required
                         value={formData.slug}
-                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        onChange={(e) => setFormData({ ...formData, slug: sanitizeSlug(e.target.value) })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono text-sm"
                     />
+                </div>
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Price Source Code</label>

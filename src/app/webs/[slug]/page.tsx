@@ -21,6 +21,9 @@ import { RelatedItems } from '@/components/related-items';
 // ISR: Revalidate every 60 seconds
 export const revalidate = 60;
 
+// Allow on-demand ISR for slugs created after build (fixes 404 on new entries)
+export const dynamicParams = true;
+
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
