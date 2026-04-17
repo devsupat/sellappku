@@ -2,11 +2,26 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Globe, Plus } from 'lucide-react';
+import { Loader2, Globe } from 'lucide-react';
+
+interface WebFormData {
+    title: string;
+    slug: string;
+    short_description: string;
+    description: string;
+    thumbnail_url: string;
+    demo_url: string;
+    price_source_code: string;
+    price_subscription: string;
+    tech_stack: string[];
+    features: string[];
+    is_featured: boolean;
+    is_active: boolean;
+}
 
 interface WebFormProps {
-    initialData?: any;
-    onSubmit: (data: any) => Promise<void>;
+    initialData?: Partial<WebFormData>;
+    onSubmit: (data: WebFormData) => Promise<void>;
 }
 
 export function WebForm({ initialData, onSubmit }: WebFormProps) {
@@ -40,7 +55,7 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
 
     // Auto-generate slug from title if creating new
     const handleTitleChange = (value: string) => {
-        const updated: any = { title: value };
+        const updated: Partial<WebFormData> = { title: value };
         if (!initialData?.slug) {
             updated.slug = sanitizeSlug(value);
         }
@@ -54,7 +69,7 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
             await onSubmit(formData);
             router.push('/admin/webs');
             router.refresh();
-        } catch (error) {
+        } catch {
             alert('Terjadi kesalahan saat menyimpan data');
         } finally {
             setLoading(false);
@@ -69,7 +84,6 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
     };
 
     return (
-
         <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-900/50 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -93,7 +107,6 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
                         onChange={(e) => setFormData({ ...formData, slug: sanitizeSlug(e.target.value) })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono text-sm"
                     />
-                </div>
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Price Source Code</label>

@@ -2,11 +2,28 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Plus, Trash2, Code2 } from 'lucide-react';
+import { Loader2, Plus, Code2 } from 'lucide-react';
+
+interface ProductFormData {
+    title: string;
+    slug: string;
+    short_description: string;
+    description: string;
+    price: string;
+    category: string;
+    thumbnail_url: string;
+    demo_url: string;
+    video_url: string;
+    is_featured: boolean;
+    is_active: boolean;
+    tech_stack: string[];
+    features: string[];
+    screenshots: string[];
+}
 
 interface ProductFormProps {
-    initialData?: any;
-    onSubmit: (data: any) => Promise<void>;
+    initialData?: Partial<ProductFormData>;
+    onSubmit: (data: ProductFormData) => Promise<void>;
 }
 
 export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
@@ -42,7 +59,7 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
 
     // Auto-generate slug from title if creating new
     const handleTitleChange = (value: string) => {
-        const updated: any = { title: value };
+        const updated: Partial<ProductFormData> = { title: value };
         if (!initialData?.slug) {
             updated.slug = sanitizeSlug(value);
         }
@@ -56,7 +73,7 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
             await onSubmit(formData);
             router.push('/admin/products');
             router.refresh();
-        } catch (error) {
+        } catch {
             alert('Terjadi kesalahan saat menyimpan data');
         } finally {
             setLoading(false);
@@ -100,7 +117,6 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono text-sm"
                         placeholder="e.g. sistem-absensi-qr"
                     />
-                </div>
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Price Label</label>

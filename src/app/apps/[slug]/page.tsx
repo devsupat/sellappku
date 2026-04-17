@@ -201,7 +201,7 @@ export default async function AppDetailPage({ params }: PageProps) {
                         <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                             {app.title}
                         </h1>
-                        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6 whitespace-pre-wrap leading-relaxed">
                             {app.short_description}
                         </p>
 
