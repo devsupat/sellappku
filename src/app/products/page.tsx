@@ -16,16 +16,12 @@ import Image from 'next/image';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
 import { Product, Game, App, Web } from '@/lib/supabase';
 import { getProducts, getGames, getApps, getWebs } from '@/lib/data';
+import { PRODUCT_CATEGORIES } from '@/lib/categories';
 
 // Categories
 const categories = [
     { slug: 'all', name: 'Semua', icon: Grid3X3 },
-    { slug: 'web-apps', name: 'Web Apps', icon: Code2 },
-    { slug: 'mobile-apps', name: 'Mobile Apps', icon: Code2 },
-    { slug: 'admin-dashboards', name: 'Admin Dashboard', icon: Code2 },
-    { slug: 'e-commerce', name: 'E-commerce', icon: Code2 },
-    { slug: 'educational-tools', name: 'Educational Tools', icon: Code2 },
-    { slug: 'games', name: 'Games', icon: Code2 },
+    ...PRODUCT_CATEGORIES
 ];
 
 export default function ProductsPage() {

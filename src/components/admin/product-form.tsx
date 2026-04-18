@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, Plus, Code2 } from 'lucide-react';
 import { FeatureManager, Feature } from './feature-manager';
 import { ScreenshotManager } from './screenshot-manager';
+import { PRODUCT_CATEGORIES } from '@/lib/categories';
 
 interface ProductFormData {
     title: string;
@@ -37,7 +38,7 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
         short_description: initialData?.short_description || '',
         description: initialData?.description || '',
         price: initialData?.price || '',
-        category: initialData?.category || 'SaaS',
+        category: initialData?.category || 'web-apps',
         thumbnail_url: initialData?.thumbnail_url || '',
         demo_url: initialData?.demo_url || '',
         video_url: initialData?.video_url || '',
@@ -138,10 +139,11 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     >
-                        <option value="SaaS">SaaS</option>
-                        <option value="Mobile App">Mobile App</option>
-                        <option value="E-Commerce">E-Commerce</option>
-                        <option value="Portfolio">Portfolio</option>
+                        {PRODUCT_CATEGORIES.map((cat) => (
+                            <option key={cat.slug} value={cat.slug}>
+                                {cat.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </div>

@@ -501,14 +501,19 @@ ON CONFLICT (slug) DO UPDATE SET
 -- SEED DATA: CATEGORIES
 -- =============================================
 INSERT INTO categories (name, slug, icon, display_order) VALUES
-('Web Apps', 'web-apps', 'Globe', 1),
-('Mobile Apps', 'mobile-apps', 'Smartphone', 2),
-('Admin Dashboard', 'admin-dashboards', 'LayoutDashboard', 3),
-('E-commerce', 'e-commerce', 'ShoppingCart', 4),
-('Educational Tools', 'educational-tools', 'GraduationCap', 5),
-('Games', 'games', 'Gamepad2', 6),
-('Web Services', 'web-services', 'Server', 7)
-ON CONFLICT (slug) DO NOTHING;
+('Websites', 'web-apps', 'Globe', 1),
+('Desktop App', 'desktop-apps', 'Monitor', 2),
+('Mobile App', 'mobile-apps', 'Smartphone', 3),
+('SaaS', 'saas', 'Layers', 4),
+('Admin Dashboard', 'admin-dashboards', 'LayoutDashboard', 5),
+('E-commerce', 'e-commerce', 'ShoppingCart', 6),
+('Educational Tools', 'educational-tools', 'GraduationCap', 7),
+('Games', 'games', 'Gamepad2', 8),
+('Portfolio', 'portfolios', 'Code2', 9)
+ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
+  icon = EXCLUDED.icon,
+  display_order = EXCLUDED.display_order;
 
 -- Success message
 SELECT 'Seed completed! Products: ' || (SELECT COUNT(*) FROM products) || ', Apps: ' || (SELECT COUNT(*) FROM apps) || ', Webs: ' || (SELECT COUNT(*) FROM webs) || ', Categories: ' || (SELECT COUNT(*) FROM categories);

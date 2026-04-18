@@ -18,8 +18,9 @@ export function DeleteButton({ id, onDelete, label }: DeleteButtonProps) {
         setLoading(true);
         try {
             await onDelete(id);
-        } catch (error) {
+        } catch {
             alert('Gagal menghapus data');
+        } finally {
             setLoading(false);
         }
     };
