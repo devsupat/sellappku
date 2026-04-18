@@ -7,7 +7,8 @@ import {
     Gamepad2, 
     Monitor,
     Globe,
-    Layers
+    Layers,
+    BookOpen
 } from 'lucide-react';
 
 export const PRODUCT_CATEGORIES = [
@@ -19,6 +20,7 @@ export const PRODUCT_CATEGORIES = [
     { slug: 'e-commerce', name: 'E-commerce', icon: ShoppingCart },
     { slug: 'educational-tools', name: 'Educational Tools', icon: GraduationCap },
     { slug: 'games', name: 'Games', icon: Gamepad2 },
+    { slug: 'ujian-cbt', name: 'Ujian CBT', icon: BookOpen },
     { slug: 'portfolios', name: 'Portfolio', icon: Code2 },
 ] as const;
 

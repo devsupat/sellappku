@@ -509,7 +509,8 @@ INSERT INTO categories (name, slug, icon, display_order) VALUES
 ('E-commerce', 'e-commerce', 'ShoppingCart', 6),
 ('Educational Tools', 'educational-tools', 'GraduationCap', 7),
 ('Games', 'games', 'Gamepad2', 8),
-('Portfolio', 'portfolios', 'Code2', 9)
+('Ujian CBT', 'ujian-cbt', 'BookOpen', 9),
+('Portfolio', 'portfolios', 'Code2', 10)
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   icon = EXCLUDED.icon,
