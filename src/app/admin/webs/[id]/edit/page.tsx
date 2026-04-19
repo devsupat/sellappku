@@ -13,16 +13,16 @@ export default async function EditWebPage({ params }: { params: Promise<{ id: st
 
     if (!web) notFound();
 
-    const updateAction = async (data: any) => {
+    const updateAction = async (data: unknown) => {
         'use server';
-        await updateWeb(id, data);
+        return await updateWeb(id, data);
     };
 
     return (
         <div className="space-y-8">
             <div>
                 <h1 className="text-3xl font-bold text-gray-900">Edit Web Service</h1>
-                <p className="text-gray-500 mt-2">Ubah detail layanan web "{web.title}".</p>
+                <p className="text-gray-500 mt-2">Ubah detail layanan web &quot;{web.title}&quot;.</p>
             </div>
             <WebForm initialData={web} onSubmit={updateAction} />
         </div>

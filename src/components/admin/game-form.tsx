@@ -4,7 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Gamepad2 } from 'lucide-react';
 import { StringListManager } from './string-list-manager';
-import { ScreenshotManager } from './screenshot-manager';
+import { ScreenshotManager, Screenshot } from './screenshot-manager';
+
+function normalizeScreenshots(raw: (Screenshot | string)[] | null | undefined): Screenshot[] {
+    if (!raw) return [];
+    return raw.map((s) => (typeof s === 'string' ? { url: s, caption: '' } : s));
+}
 
 const GENRE_OPTIONS = [
     { value: 'simulation', label: 'Simulation' },
@@ -34,11 +39,12 @@ const DOWNLOAD_TYPE_OPTIONS = [
 
 interface GameFormProps {
     initialData?: any;
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: any) => Promise<{ success: boolean; error?: string }>;
 }
 
 export function GameForm({ initialData, onSubmit }: GameFormProps) {
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState<string | null>(null);
     const router = useRouter();
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
@@ -57,7 +63,7 @@ export function GameForm({ initialData, onSubmit }: GameFormProps) {
         is_featured: initialData?.is_featured || false,
         is_active: initialData?.is_active ?? true,
         features: initialData?.features || [],
-        screenshots: initialData?.screenshots || [],
+        screenshots: normalizeScreenshots(initialData?.screenshots),
     });
 
     const sanitizeSlug = (value: string) =>
@@ -79,13 +85,16 @@ export function GameForm({ initialData, onSubmit }: GameFormProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setServerError(null);
         try {
-            await onSubmit(formData);
+            const result = await onSubmit(formData);
+            if (!result.success) {
+                setServerError(result.error || 'Terjadi kesalahan saat menyimpan data.');
+                return;
+            }
             router.push('/admin/games');
-            router.refresh();
-        } catch (error: any) {
-            console.error('Error submitting game:', error);
-            alert(`Terjadi kesalahan saat menyimpan data: ${error.message || 'Silakan coba lagi.'}`);
+        } catch (e) {
+            setServerError('Terjadi kesalahan yang tidak terduga. Silakan coba lagi.');
         } finally {
             setLoading(false);
         }
@@ -93,6 +102,11 @@ export function GameForm({ initialData, onSubmit }: GameFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-900/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm">
+            {serverError && (
+                <div className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-medium">
+                    {serverError}
+                </div>
+            )}
             {/* Title & Slug */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>

@@ -2,17 +2,24 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Smartphone, Plus } from 'lucide-react';
+import { Loader2, Smartphone } from 'lucide-react';
 import { StringListManager } from './string-list-manager';
-import { ScreenshotManager } from './screenshot-manager';
+import { ScreenshotManager, Screenshot } from './screenshot-manager';
+import { ActionResult } from '@/app/actions/apps';
+
+function normalizeScreenshots(raw: (Screenshot | string)[] | null | undefined): Screenshot[] {
+    if (!raw) return [];
+    return raw.map((s) => (typeof s === 'string' ? { url: s, caption: '' } : s));
+}
 
 interface AppFormProps {
     initialData?: any;
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: any) => Promise<ActionResult>;
 }
 
 export function AppForm({ initialData, onSubmit }: AppFormProps) {
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState<string | null>(null);
     const router = useRouter();
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
@@ -32,7 +39,7 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
         is_featured: initialData?.is_featured || false,
         is_active: initialData?.is_active ?? true,
         features: initialData?.features || [],
-        screenshots: initialData?.screenshots || [],
+        screenshots: normalizeScreenshots(initialData?.screenshots),
     });
 
     // Auto-sanitize slug: lowercase, spaces to hyphens, remove special chars
@@ -56,12 +63,16 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setServerError(null);
         try {
-            await onSubmit(formData);
+            const result = await onSubmit(formData);
+            if (!result.success) {
+                setServerError(result.error || 'Terjadi kesalahan saat menyimpan data.');
+                return;
+            }
             router.push('/admin/apps');
-            router.refresh();
-        } catch (error) {
-            alert('Terjadi kesalahan saat menyimpan data');
+        } catch (e) {
+            setServerError('Terjadi kesalahan yang tidak terduga. Silakan coba lagi.');
         } finally {
             setLoading(false);
         }
@@ -69,6 +80,11 @@ export function AppForm({ initialData, onSubmit }: AppFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-900/50 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+            {serverError && (
+                <div className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-medium">
+                    {serverError}
+                </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title</label>

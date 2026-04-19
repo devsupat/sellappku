@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Plus, Code2 } from 'lucide-react';
 import { FeatureManager, Feature } from './feature-manager';
-import { ScreenshotManager } from './screenshot-manager';
+import { ScreenshotManager, Screenshot } from './screenshot-manager';
 import { PRODUCT_CATEGORIES } from '@/lib/categories';
+import { ActionResult } from '@/app/actions/products';
 
 interface ProductFormData {
     title: string;
@@ -21,18 +22,30 @@ interface ProductFormData {
     is_active: boolean;
     tech_stack: string[];
     features: Feature[];
-    screenshots: string[];
+    screenshots: Screenshot[];
 }
 
 interface ProductFormProps {
-    initialData?: Partial<ProductFormData>;
-    onSubmit: (data: ProductFormData) => Promise<void>;
+    initialData?: Partial<ProductFormData & { screenshots: (Screenshot | string)[] }>;
+    onSubmit: (data: ProductFormData) => Promise<ActionResult>;
+}
+
+/**
+ * Normalizes screenshots that may be plain strings (legacy) or {url, caption} objects.
+ */
+function normalizeScreenshots(raw: (Screenshot | string)[] | null | undefined): Screenshot[] {
+    if (!raw) return [];
+    return raw.map((s) =>
+        typeof s === 'string' ? { url: s, caption: '' } : s
+    );
 }
 
 export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState<string | null>(null);
     const router = useRouter();
-    const [formData, setFormData] = useState({
+
+    const [formData, setFormData] = useState<ProductFormData>({
         title: initialData?.title || '',
         slug: initialData?.slug || '',
         short_description: initialData?.short_description || '',
@@ -46,7 +59,7 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
         is_active: initialData?.is_active ?? true,
         tech_stack: initialData?.tech_stack || [],
         features: initialData?.features || [],
-        screenshots: initialData?.screenshots || [],
+        screenshots: normalizeScreenshots(initialData?.screenshots),
     });
 
     const [newTech, setNewTech] = useState('');
@@ -60,7 +73,7 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
 
-    // Auto-generate slug from title if creating new
+    // Auto-generate slug from title only when creating new
     const handleTitleChange = (value: string) => {
         const updated: Partial<ProductFormData> = { title: value };
         if (!initialData?.slug) {
@@ -72,12 +85,24 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setServerError(null);
+
         try {
-            await onSubmit(formData);
+            const result = await onSubmit(formData);
+
+            if (!result.success) {
+                setServerError(result.error || 'Terjadi kesalahan saat menyimpan data.');
+                return;
+            }
+
+            // Navigate away — no router.refresh() needed here.
+            // revalidatePath in the server action handles cache invalidation.
             router.push('/admin/products');
-            router.refresh();
-        } catch {
-            alert('Terjadi kesalahan saat menyimpan data');
+        } catch (e) {
+            // This should not happen since the action now returns ActionResult,
+            // but guard against unexpected throw from the runtime.
+            console.error('[ProductForm] Unexpected error:', e);
+            setServerError('Terjadi kesalahan yang tidak terduga. Silakan coba lagi.');
         } finally {
             setLoading(false);
         }
@@ -91,11 +116,18 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
     };
 
     const removeTech = (tech: string) => {
-        setFormData({ ...formData, tech_stack: formData.tech_stack.filter((t: string) => t !== tech) });
+        setFormData({ ...formData, tech_stack: formData.tech_stack.filter((t) => t !== tech) });
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-900/50 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+            {/* Server-side error banner */}
+            {serverError && (
+                <div className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-medium">
+                    {serverError}
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title</label>
@@ -204,15 +236,15 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
                 />
             </div>
 
-                <FeatureManager 
-                    features={formData.features} 
-                    onChange={(features) => setFormData({ ...formData, features })} 
-                />
+            <FeatureManager
+                features={formData.features}
+                onChange={(features) => setFormData({ ...formData, features })}
+            />
 
-                <ScreenshotManager 
-                    screenshots={formData.screenshots} 
-                    onChange={(screenshots) => setFormData({ ...formData, screenshots })} 
-                />
+            <ScreenshotManager
+                screenshots={formData.screenshots}
+                onChange={(screenshots) => setFormData({ ...formData, screenshots })}
+            />
 
             <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tech Stack</label>
@@ -221,7 +253,7 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
                         type="text"
                         value={newTech}
                         onChange={(e) => setNewTech(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())}
                         className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                         placeholder="Add tech (e.g. Next.js)..."
                     />
@@ -234,10 +266,12 @@ export function ProductForm({ initialData, onSubmit }: ProductFormProps) {
                     </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    {formData.tech_stack.map((tech: string) => (
+                    {formData.tech_stack.map((tech) => (
                         <span key={tech} className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
                             {tech}
-                            <button type="button" onClick={() => removeTech(tech)} className="hover:text-red-500"><Plus className="h-3 w-3 rotate-45" /></button>
+                            <button type="button" onClick={() => removeTech(tech)} className="hover:text-red-500">
+                                <Plus className="h-3 w-3 rotate-45" />
+                            </button>
                         </span>
                     ))}
                 </div>

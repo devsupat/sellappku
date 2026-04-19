@@ -1,274 +1,95 @@
-import { supabase, Product, App, Web, Game, Announcement } from './supabase';
+import { productService } from './services/product.service';
+import { appService } from './services/app.service';
+import { webService } from './services/web.service';
+import { gameService } from './services/game.service';
+import { announcementService } from './services/announcement.service';
 
-// Products
-export async function getProducts(): Promise<Product[]> {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+/**
+ * @deprecated Use productService.getAll() directly
+ */
+export const getProducts = () => productService.getAll();
 
-    if (error) {
-        console.error('Error fetching products:', error);
-        return [];
-    }
-    return data || [];
-}
+/**
+ * @deprecated Use productService.getFeatured() directly
+ */
+export const getFeaturedProducts = () => productService.getFeatured();
 
-export async function getFeaturedProducts(): Promise<Product[]> {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .eq('is_featured', true)
-        .limit(6);
+/**
+ * @deprecated Use productService.getBySlug() directly
+ */
+export const getProductBySlug = (slug: string) => productService.getBySlug(slug);
 
-    if (error) {
-        console.error('Error fetching featured products:', error);
-        return [];
-    }
-    return data || [];
-}
+/**
+ * @deprecated Use productService.getByCategory() directly
+ */
+export const getProductsByCategory = (category: string) => productService.getByCategory(category);
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .single();
+/**
+ * @deprecated Use productService.getRelated() directly
+ */
+export const getRelatedProducts = (category: string, currentSlug: string) => productService.getRelated(category, currentSlug);
 
-    if (error) {
-        console.error('Error fetching product:', error);
-        return null;
-    }
-    return data;
-}
+/**
+ * @deprecated Use appService.getAll() directly
+ */
+export const getApps = () => appService.getAll();
 
-export async function getProductsByCategory(category: string): Promise<Product[]> {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .eq('category', category)
-        .order('created_at', { ascending: false });
+/**
+ * @deprecated Use appService.getFeatured() directly
+ */
+export const getFeaturedApps = () => appService.getFeatured();
 
-    if (error) {
-        console.error('Error fetching products by category:', error);
-        return [];
-    }
-    return data || [];
-}
+/**
+ * @deprecated Use appService.getBySlug() directly
+ */
+export const getAppBySlug = (slug: string) => appService.getBySlug(slug);
 
-export async function getRelatedProducts(category: string, currentSlug: string): Promise<Product[]> {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .eq('category', category)
-        .neq('slug', currentSlug)
-        .limit(4);
+/**
+ * @deprecated Use appService.getRelated() directly
+ */
+export const getRelatedApps = (currentSlug: string) => appService.getRelated(currentSlug);
 
-    if (error) {
-        console.error('Error fetching related products:', error);
-        return [];
-    }
-    return data || [];
-}
+/**
+ * @deprecated Use webService.getAll() directly
+ */
+export const getWebs = () => webService.getAll();
 
-// Apps
-export async function getApps(): Promise<App[]> {
-    const { data, error } = await supabase
-        .from('apps')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+/**
+ * @deprecated Use webService.getFeatured() directly
+ */
+export const getFeaturedWebs = () => webService.getFeatured();
 
-    if (error) {
-        console.error('Error fetching apps:', error);
-        return [];
-    }
-    return data || [];
-}
+/**
+ * @deprecated Use webService.getBySlug() directly
+ */
+export const getWebBySlug = (slug: string) => webService.getBySlug(slug);
 
-export async function getFeaturedApps(): Promise<App[]> {
-    const { data, error } = await supabase
-        .from('apps')
-        .select('*')
-        .eq('is_active', true)
-        .eq('is_featured', true)
-        .limit(6);
+/**
+ * @deprecated Use webService.getRelated() directly
+ */
+export const getRelatedWebs = (currentSlug: string) => webService.getRelated(currentSlug);
 
-    if (error) {
-        console.error('Error fetching featured apps:', error);
-        return [];
-    }
-    return data || [];
-}
+/**
+ * @deprecated Use gameService.getAll() directly
+ */
+export const getGames = () => gameService.getAll();
 
-export async function getAppBySlug(slug: string): Promise<App | null> {
-    const { data, error } = await supabase
-        .from('apps')
-        .select('*')
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .single();
+/**
+ * @deprecated Use gameService.getFeatured() directly
+ */
+export const getFeaturedGames = () => gameService.getFeatured();
 
-    if (error) {
-        console.error('Error fetching app:', error);
-        return null;
-    }
-    return data;
-}
+/**
+ * @deprecated Use gameService.getBySlug() directly
+ */
+export const getGameBySlug = (slug: string) => gameService.getBySlug(slug);
 
-export async function getRelatedApps(currentSlug: string): Promise<App[]> {
-    const { data, error } = await supabase
-        .from('apps')
-        .select('*')
-        .eq('is_active', true)
-        .neq('slug', currentSlug)
-        .limit(4);
+/**
+ * @deprecated Use gameService.getRelated() directly
+ */
+export const getRelatedGames = (genre: string, currentSlug: string) => gameService.getRelated(genre, currentSlug);
 
-    if (error) {
-        console.error('Error fetching related apps:', error);
-        return [];
-    }
-    return data || [];
-}
-
-// Webs (Web Services)
-
-export async function getWebs(): Promise<Web[]> {
-    const { data, error } = await supabase
-        .from('webs')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Error fetching webs:', error);
-        return [];
-    }
-    return data || [];
-}
-
-export async function getFeaturedWebs(): Promise<Web[]> {
-    const { data, error } = await supabase
-        .from('webs')
-        .select('*')
-        .eq('is_active', true)
-        .eq('is_featured', true)
-        .limit(6);
-
-    if (error) {
-        console.error('Error fetching featured webs:', error);
-        return [];
-    }
-    return data || [];
-}
-
-export async function getWebBySlug(slug: string): Promise<Web | null> {
-    const { data, error } = await supabase
-        .from('webs')
-        .select('*')
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .single();
-
-    if (error) {
-        console.error('Error fetching web:', error);
-        return null;
-    }
-    return data;
-}
-
-export async function getRelatedWebs(currentSlug: string): Promise<Web[]> {
-    const { data, error } = await supabase
-        .from('webs')
-        .select('*')
-        .eq('is_active', true)
-        .neq('slug', currentSlug)
-        .limit(4);
-
-    if (error) {
-        console.error('Error fetching related webs:', error);
-        return [];
-    }
-    return data || [];
-}
-
-// Games
-export async function getGames(): Promise<Game[]> {
-    const { data, error } = await supabase
-        .from('games')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Error fetching games:', error);
-        return [];
-    }
-    return data || [];
-}
-
-export async function getFeaturedGames(): Promise<Game[]> {
-    const { data, error } = await supabase
-        .from('games')
-        .select('*')
-        .eq('is_active', true)
-        .eq('is_featured', true)
-        .limit(6);
-
-    if (error) {
-        console.error('Error fetching featured games:', error);
-        return [];
-    }
-    return data || [];
-}
-
-export async function getGameBySlug(slug: string): Promise<Game | null> {
-    const { data, error } = await supabase
-        .from('games')
-        .select('*')
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .single();
-
-    if (error) {
-        console.error('Error fetching game:', error);
-        return null;
-    }
-    return data;
-}
-
-export async function getRelatedGames(genre: string, currentSlug: string): Promise<Game[]> {
-    const { data, error } = await supabase
-        .from('games')
-        .select('*')
-        .eq('is_active', true)
-        .eq('genre', genre)
-        .neq('slug', currentSlug)
-        .limit(4);
-
-    if (error) {
-        console.error('Error fetching related games:', error);
-        return [];
-    }
-    return data || [];
-}
-
-// Announcements
-export async function getActiveAnnouncements(): Promise<Announcement[]> {
-    const { data, error } = await supabase
-        .from('announcements')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-
-    if (error) {
-        console.error('Error fetching announcements:', error);
-        return [];
-    }
-    return data || [];
-}
+/**
+ * @deprecated Use announcementService.getActive() directly
+ */
+export const getActiveAnnouncements = () => announcementService.getActive();

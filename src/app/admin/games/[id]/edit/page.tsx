@@ -13,7 +13,7 @@ export default async function EditGamePage({ params }: { params: Promise<{ id: s
 
     if (!game) notFound();
 
-    const updateAction = async (data: any) => {
+    const updateAction = async (data: unknown) => {
         'use server';
         return await updateGame(id, data);
     };

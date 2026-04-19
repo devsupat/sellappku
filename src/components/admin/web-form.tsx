@@ -22,11 +22,12 @@ interface WebFormData {
 
 interface WebFormProps {
     initialData?: Partial<WebFormData>;
-    onSubmit: (data: WebFormData) => Promise<void>;
+    onSubmit: (data: WebFormData) => Promise<{ success: boolean; error?: string }>;
 }
 
 export function WebForm({ initialData, onSubmit }: WebFormProps) {
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState<string | null>(null);
     const router = useRouter();
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
@@ -66,12 +67,16 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setServerError(null);
         try {
-            await onSubmit(formData);
+            const result = await onSubmit(formData);
+            if (!result.success) {
+                setServerError(result.error || 'Terjadi kesalahan saat menyimpan data.');
+                return;
+            }
             router.push('/admin/webs');
-            router.refresh();
         } catch {
-            alert('Terjadi kesalahan saat menyimpan data');
+            setServerError('Terjadi kesalahan yang tidak terduga. Silakan coba lagi.');
         } finally {
             setLoading(false);
         }
@@ -86,6 +91,11 @@ export function WebForm({ initialData, onSubmit }: WebFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-900/50 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+            {serverError && (
+                <div className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-medium">
+                    {serverError}
+                </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title</label>

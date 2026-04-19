@@ -17,16 +17,16 @@ export default async function EditProductPage({
 
     if (!product) notFound();
 
-    const updateAction = async (data: any) => {
+    const updateAction = async (data: unknown) => {
         'use server';
-        await updateProduct(id, data);
+        return await updateProduct(id, data);
     };
 
     return (
         <div className="space-y-8">
             <div>
                 <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
-                <p className="text-gray-500 mt-2">Ubah detail produk "{product.title}".</p>
+                <p className="text-gray-500 mt-2">Ubah detail produk &quot;{product.title}&quot;.</p>
             </div>
             <ProductForm initialData={product} onSubmit={updateAction} />
         </div>

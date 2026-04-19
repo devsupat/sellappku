@@ -13,16 +13,16 @@ export default async function EditAppPage({ params }: { params: Promise<{ id: st
 
     if (!app) notFound();
 
-    const updateAction = async (data: any) => {
+    const updateAction = async (data: unknown) => {
         'use server';
-        await updateApp(id, data);
+        return await updateApp(id, data);
     };
 
     return (
         <div className="space-y-8">
             <div>
                 <h1 className="text-3xl font-bold text-gray-900">Edit App</h1>
-                <p className="text-gray-500 mt-2">Ubah detail aplikasi "{app.title}".</p>
+                <p className="text-gray-500 mt-2">Ubah detail aplikasi &quot;{app.title}&quot;.</p>
             </div>
             <AppForm initialData={app} onSubmit={updateAction} />
         </div>

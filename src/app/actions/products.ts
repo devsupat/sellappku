@@ -3,47 +3,83 @@
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
 
-export async function createProduct(formData: any) {
-    const { error } = await supabase
-        .from('products')
-        .insert([formData]);
-
-    if (error) {
-        console.error('Error creating product:', error);
-        throw error;
-    }
-    revalidatePath('/products');
-    revalidatePath('/admin/products');
-    revalidatePath('/');
+export interface ActionResult {
+    success: boolean;
+    error?: string;
 }
 
-export async function updateProduct(id: string, formData: any) {
-    const { error } = await supabase
-        .from('products')
-        .update(formData)
-        .eq('id', id);
+export async function createProduct(formData: any): Promise<ActionResult> {
+    try {
+        const { error } = await supabase.from('products').insert([formData]);
 
-    if (error) {
-        console.error('Error updating product:', error);
-        throw error;
+        if (error) {
+            console.error('[Action Error] createProduct:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+            });
+            return { success: false, error: error.message };
+        }
+
+        revalidatePath('/products');
+        revalidatePath('/admin/products');
+        revalidatePath('/');
+        return { success: true };
+    } catch (e: any) {
+        console.error('[Critical Error] createProduct:', e?.message);
+        return { success: false, error: 'Unexpected server error. Please try again.' };
     }
-    revalidatePath('/products');
-    revalidatePath(`/products/${formData.slug}`);
-    revalidatePath('/admin/products');
-    revalidatePath('/');
 }
 
-export async function deleteProduct(id: string) {
-    const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
+export async function updateProduct(id: string, formData: any): Promise<ActionResult> {
+    try {
+        const { error } = await supabase
+            .from('products')
+            .update(formData)
+            .eq('id', id);
 
-    if (error) {
-        console.error('Error deleting product:', error);
-        throw error;
+        if (error) {
+            console.error('[Action Error] updateProduct:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+            });
+            return { success: false, error: error.message };
+        }
+
+        revalidatePath('/products');
+        revalidatePath(`/products/${formData.slug}`);
+        revalidatePath('/admin/products');
+        revalidatePath('/');
+        return { success: true };
+    } catch (e: any) {
+        console.error('[Critical Error] updateProduct:', e?.message);
+        return { success: false, error: 'Unexpected server error. Please try again.' };
     }
-    revalidatePath('/products');
-    revalidatePath('/admin/products');
-    revalidatePath('/');
+}
+
+export async function deleteProduct(id: string): Promise<ActionResult> {
+    try {
+        const { error } = await supabase.from('products').delete().eq('id', id);
+
+        if (error) {
+            console.error('[Action Error] deleteProduct:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+            });
+            return { success: false, error: error.message };
+        }
+
+        revalidatePath('/products');
+        revalidatePath('/admin/products');
+        revalidatePath('/');
+        return { success: true };
+    } catch (e: any) {
+        console.error('[Critical Error] deleteProduct:', e?.message);
+        return { success: false, error: 'Unexpected server error. Please try again.' };
+    }
 }
